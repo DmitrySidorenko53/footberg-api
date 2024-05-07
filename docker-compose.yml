@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+    nginx:
+        build:
+            context: .
+            dockerfile: docker/nginx.Dockerfile
+        ports:
+            - "8090:80"
+        container_name: nginx
+        links:
+            - app
+        volumes:
+            - ./:/var/www/laravel-docker
+    app:
+        build:
+            context: .
+            dockerfile: docker/app.Dockerfile
+        volumes:
+            - ./:/var/www/laravel-docker
+        links:
+            - mysql
+        container_name: app
