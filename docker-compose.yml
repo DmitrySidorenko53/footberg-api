@@ -16,9 +16,9 @@ services:
         image: mysql:8.2.0
         container_name: database
         ports:
-            - '33081:3308'
+            - '33081:3306'
         environment:
-            - MYSQL_ROOT_PASSWORD=123456
+            - MYSQL_ROOT_PASSWORD=root
             - MYSQL_DATABASE=footberg_db
             - MYSQL_USER=footberg
             - MYSQL_PASSWORD=footberg
