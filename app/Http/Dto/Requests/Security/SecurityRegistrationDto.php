@@ -9,10 +9,18 @@ class SecurityRegistrationDto extends AbstractDto
     public $email;
     public $password;
 
+//40RyA2WmGkbxHRgC3cAyRUzePQUHnkup
 
     public function rules(): array
     {
-        // TODO: Implement rules() method.
+        return [
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|max:255'
+        ];
+    }
+
+    public function messages(): array
+    {
         return [];
     }
 }

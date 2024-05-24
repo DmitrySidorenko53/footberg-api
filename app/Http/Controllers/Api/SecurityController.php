@@ -19,9 +19,9 @@ class SecurityController extends Controller
         $this->securityService = $securityService;
     }
 
-    public function registration(SecurityRegistrationDto $dto) {
-        $response = $this->securityService->register($dto);
-        return $response;
+    public function register(SecurityRegistrationDto $dto) {
+        $validated = $dto->validated();
+       return $validated;
     }
 
     public function login(SecurityLoginDto $dto) {

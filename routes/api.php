@@ -8,7 +8,7 @@ Route::group(
         'prefix' => 'security'
     ],
     function () {
-        Route::post('/register', [SecurityController::class, 'registration']);
+        Route::post('/register', [SecurityController::class, 'register']);
         Route::post('/login', [SecurityController::class, 'login']);
     }
 );
