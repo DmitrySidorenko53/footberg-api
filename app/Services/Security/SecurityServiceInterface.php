@@ -2,10 +2,8 @@
 
 namespace App\Services\Security;
 
-use App\Http\Dto\DtoInterface;
-
 interface SecurityServiceInterface
 {
-    public function register(DtoInterface $dto);
-    public function login(DtoInterface $dto);
+    public function register();
+    public function login();
 }
