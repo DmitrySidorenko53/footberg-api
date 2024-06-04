@@ -13,7 +13,7 @@ abstract class AbstractDto implements DtoInterface, ValidatesWhenResolved
 {
     use ValidatesWhenResolvedTrait;
 
-    protected $data;
+    protected array $data;
     protected $validator;
     protected bool $stopOnFirstFailure = false;
 
@@ -73,8 +73,17 @@ abstract class AbstractDto implements DtoInterface, ValidatesWhenResolved
         throw (new $exception($validator));
     }
 
-    private function passedValidation()
+    private function passedValidation(): void
     {
-        //TODO set to dto fields value of validated data
+        $this->data = $this->validator->validated();
+
+        $vars = get_class_vars(get_class($this));
+        $attributes = array_keys($vars);
+
+        foreach ($attributes as $attribute) {
+            if (array_key_exists($attribute, $this->data)) {
+                $this->$attribute = $this->data[$attribute];
+            }
+        }
     }
 }
