@@ -14,8 +14,8 @@ class SecurityRegisterDto extends AbstractDto
     {
         return
             [
-                'email' => 'required',
-                'password' => 'required',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
             ];
     }
 
