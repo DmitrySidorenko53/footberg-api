@@ -1,10 +1,9 @@
 <?php
 
-use App\Http\Responses\ApiFailResponse;
+use App\Exceptions\Handler;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,13 +16,5 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (Throwable $throwable) {
-           if ($throwable instanceof ValidationException) {
-               return new ApiFailResponse($throwable->errors(), 422, 'Validation Error');
-           }
-           if ($throwable instanceof InvalidArgumentException) {
-               return new ApiFailResponse([$throwable->getMessage()], 400, 'Invalid Request');
-           }
-           return new ApiFailResponse([$throwable->getMessage()], 500);
-        });
+        Handler::handle($exceptions);
     })->create();

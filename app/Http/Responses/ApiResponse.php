@@ -24,7 +24,7 @@ abstract class ApiResponse extends JsonResponse
         $this->setStatusCodes();
 
         if (!array_key_exists($statusCode, $this->statusCodes)) {
-            throw new InvalidArgumentException('Invalid status code');
+            throw new InvalidArgumentException('Status code must match the type of response');
         }
 
         $this->statusCode = $statusCode;

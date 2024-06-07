@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\Security\Impl\SecurityService;
-use App\Services\Security\SecurityServiceInterface;
+use App\Services\Impl\SecurityService;
+use App\Services\SecurityServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
