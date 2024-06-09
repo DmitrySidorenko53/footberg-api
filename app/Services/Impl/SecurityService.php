@@ -5,6 +5,7 @@ namespace App\Services\Impl;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\ServiceException;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
+use App\Mail\AppMail;
 use App\Models\User;
 use App\Repositories\UserRepositoryInterface;
 use App\Services\SecurityServiceInterface;
@@ -12,6 +13,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 use Random\RandomException;
 
@@ -48,7 +50,14 @@ class SecurityService implements SecurityServiceInterface
             throw new ServiceException('Error registering user');
         }
 
-        //send code to email
+        //send code to email for confirm account
+        Mail::to($user->email)->send(new AppMail(
+            [
+                'title' => 'Confirm your account',
+                'confirmationCode' => $confirmationCode,
+                'recipient' => $user->email,
+            ],
+            'confirmation-mail'));
 
         return [
             'user_id' => $user->user_id,
