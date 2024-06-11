@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\ConfirmationCodeRepositoryInterface;
+use App\Repositories\Impl\ConfirmationCodeRepository;
 use App\Repositories\Impl\UserRepository;
 use App\Repositories\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +27,7 @@ class RepositoryProvider extends ServiceProvider
     }
 
     public array $bindings = [
-        UserRepositoryInterface::class => UserRepository::class
+        UserRepositoryInterface::class => UserRepository::class,
+        ConfirmationCodeRepositoryInterface::class => ConfirmationCodeRepository::class,
     ];
 }

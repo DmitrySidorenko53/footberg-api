@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -36,10 +37,6 @@ class User extends Authenticatable
     protected $fillable = [
         'email',
         'password',
-        'confirmation_code',
-        'register_at',
-        'is_confirmed',
-        'confirmed_at',
         'register_at',
         'deleted_at',
         'last_login_at'
@@ -56,15 +53,8 @@ class User extends Authenticatable
         'password'
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    public function codes(): HasMany
     {
-        return [
-            'is_confirmed' => 'boolean'
-        ];
+        return $this->hasMany(ConfirmationCode::class, 'user_id', 'user_id');
     }
 }
