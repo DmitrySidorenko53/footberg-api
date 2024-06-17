@@ -9,8 +9,8 @@ use App\Repositories\ConfirmationCodeRepositoryInterface;
 class ConfirmationCodeRepository extends BaseRepository implements ConfirmationCodeRepositoryInterface
 {
 
-    protected function setModel(): void
+    public function __construct()
     {
-        $this->model = ConfirmationCode::class;
+        parent::__construct(ConfirmationCode::class);
     }
 }

@@ -2,27 +2,20 @@
 
 namespace App\Repositories;
 
-use App\Exceptions\RepositoryException;
-
 abstract class BaseRepository
 {
     protected mixed $model;
-    private $builder;
 
-    public function getBuilder(): mixed
+    /**
+     * @param mixed $model
+     */
+    public function __construct(mixed $model)
     {
-        return $this->builder;
+        $this->model = $model;
     }
-
-    public function setBuilder(): void
-    {
-        $this->builder = $this->model->newQuery();
-    }
-
-    abstract protected function setModel();
 
     public function create(array $data) {
-        return $this->model->insertGetId($data);
+        return $this->model::query()->insertGetId($data);
     }
 
     public function save($model)
@@ -31,20 +24,47 @@ abstract class BaseRepository
     }
 
     public function update($model, array $data) {
-
+        return $model->update($data);
     }
 
-    public function findById(int $id) {
-        return $this->model->find($id);
+    public function updateWhereIn($field, $values, array $data): int
+    {
+       return $this->model::query()->whereIn($field, $values)->update($data);
     }
 
-    public function findByField(string $field, mixed $value, $operator = '=') {
-
+    public function findById(int $id, $relations = null)
+    {
+        $builder = $this->model::query();
+        return $this->relations($builder, $relations)->find($id);
     }
 
-    public function findByFields(array $fields) {
-
+    public function findWithRelations($relations, int $limit = 0, int $offset = 0)
+    {
+        $builder = $this->model::query();
+        return $this->relations($builder, $relations)->take($limit)->skip($offset);
     }
 
+   public function relations($builder, string|array $relations)
+   {
+       if (!$relations) {
+           return $builder;
+       }
+
+       if (is_string($relations)) {
+           $builder->with($relations);
+           return $builder;
+       }
+
+       foreach ($relations as $relation) {
+           $builder->with($relation);
+       }
+
+       return $builder;
+   }
+
+   public function filter($builder)
+   {
+
+   }
 
 }

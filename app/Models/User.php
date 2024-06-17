@@ -14,12 +14,10 @@ use Illuminate\Notifications\Notifiable;
  * @property int $user_id
  * @property string $email
  * @property string $password
- * @property string $confirmation_code
  * @property Carbon $register_at
  * @property Carbon $deleted_at
  * @property Carbon $last_login_at
- * @property Carbon $confirmed_at
- * @property bool $is_confirmed
+ * @property bool $is_active
  */
 class User extends Authenticatable
 {
@@ -39,7 +37,8 @@ class User extends Authenticatable
         'password',
         'register_at',
         'deleted_at',
-        'last_login_at'
+        'last_login_at',
+        'is_active'
     ];
 
     public $timestamps = false;
@@ -56,5 +55,14 @@ class User extends Authenticatable
     public function codes(): HasMany
     {
         return $this->hasMany(ConfirmationCode::class, 'user_id', 'user_id');
+    }
+
+
+    public function getLastValidCode(): object|null
+    {
+        return $this->codes()
+            ->where('is_expired', false)
+            ->orderBy('created_at', 'desc')
+            ->first();
     }
 }

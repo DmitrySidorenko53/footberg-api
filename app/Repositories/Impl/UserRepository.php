@@ -8,8 +8,9 @@ use App\Repositories\UserRepositoryInterface;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    protected function setModel(): void
+
+    public function __construct()
     {
-        $this->model = User::class;
+        parent::__construct(User::class);
     }
 }

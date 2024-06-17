@@ -17,9 +17,9 @@ Route::group(
             function () {
                 Route::post('/register', [SecurityController::class, 'register']);
                 Route::post('/login', [SecurityController::class, 'login']);
+                Route::post('/code/confirm', [SecurityController::class, 'confirm']);
+                Route::post('/code/refresh', [SecurityController::class, 'refreshConfirmationCode']);
             }
         );
-
-
     });
 

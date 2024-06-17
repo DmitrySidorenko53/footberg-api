@@ -4,15 +4,20 @@ namespace App\Services\Impl;
 
 
 use App\Exceptions\ServiceException;
+use App\Http\Dto\Requests\DtoInterface;
+use App\Http\Dto\Requests\Security\SecurityConfirmDto;
+use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
 use App\Models\User;
 use App\Repositories\UserRepositoryInterface;
 use App\Services\ConfirmationCodeServiceInterface;
 use App\Services\SecurityServiceInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
-use Random\RandomException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 class SecurityService implements SecurityServiceInterface
 {
@@ -33,19 +38,32 @@ class SecurityService implements SecurityServiceInterface
         if (!$dto instanceof SecurityRegisterDto) {
             throw new InvalidArgumentException(get_class($this) . " register method must receive a SecurityRegisterDto");
         }
-
         $user = new User();
         $user->email = $dto->email;
         $user->password = Hash::make($dto->password, ['rounds' => 12]);
         $user->register_at = Carbon::now(3)->format('Y-m-d H:i:s');
 
-        $isSuccess = $this->userRepository->save($user);
+        $code = [];
 
-        if (!$isSuccess) {
-            throw new ServiceException('Error registering user');
+        try {
+            DB::beginTransaction();
+
+            $isSuccess = $this->userRepository->save($user);
+
+            if (!$isSuccess) {
+                throw new ServiceException('Error registering user');
+            }
+            $code = $this->confirmationCodeService->createConfirmationCode($user);
+
+            DB::commit();
+        } catch (Throwable) {
+            DB::rollBack();
         }
 
-        $code = $this->confirmationCodeService->createConfirmationCode($user);
+        if (sizeof($code) == 0) {
+            throw new ServiceException('Error creating code');
+        }
+
         $this->confirmationCodeService->sendEmail($code['code'], $user->email);
 
         return [
@@ -57,5 +75,58 @@ class SecurityService implements SecurityServiceInterface
     public function login($dto)
     {
         return 'login method';// TODO: Implement login() method.
+    }
+
+    public function refreshCode($dto)
+    {
+        if (!$dto instanceof SecurityRefreshCodeDto) {
+            throw new InvalidArgumentException(get_class($this) . " refresh code method must receive a SecurityRefreshCodeDto");
+        }
+
+        $user = $this->userRepository->findById($dto->userId, 'codes');
+        $code = $this->confirmationCodeService->refreshCode($user);
+
+        if (sizeof($code) == 0) {
+            throw new ServiceException('Error refreshing code');
+        }
+
+        $this->confirmationCodeService->sendEmail($code['code'], $user->email);
+
+        return [
+            'user_id' => $user->user_id,
+            'email' => $user->email
+        ];
+    }
+
+    public function confirmAccount(DtoInterface $dto)
+    {
+        if (!$dto instanceof SecurityConfirmDto) {
+            throw new InvalidArgumentException(get_class($this) . " confirm method must receive a SecurityConfirmDto");
+        }
+
+        /** @var User $user */
+        $user = $this->userRepository->findById($dto->userId, 'codes');
+
+        $code = $user->getLastValidCode();
+
+        if (!$this->confirmationCodeService->isValid($code, $dto->code)) {
+            throw new NotFoundHttpException('No valid codes for this user. Please refresh the confirmation code');
+        }
+
+        if (!Hash::check($dto->code, $code->code_text)) {
+            throw new InvalidArgumentException('Invalid confirmation code');
+        }
+
+        $isConfirmed = $this->confirmationCodeService->confirmCode($code);
+
+        if (!$isConfirmed) {
+            throw new ServiceException('Error confirming code');
+        }
+
+        $user->is_active = true;
+        $this->userRepository->save($user);
+
+        return 'success';
+        //todo login user
     }
 }

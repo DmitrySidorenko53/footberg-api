@@ -27,6 +27,10 @@ class ConfirmationCode extends Model
 
     protected $table = 'confirmation_codes';
 
+    public $hidden = [
+        'code_text'
+    ];
+
     protected $fillable = [
         'code_text',
         'created_at',
