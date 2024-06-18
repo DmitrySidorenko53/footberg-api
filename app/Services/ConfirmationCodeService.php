@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Services\Impl;
+namespace App\Services;
 
 use App\Exceptions\ServiceException;
+use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
+use App\Interfaces\Service\ConfirmationCodeServiceInterface;
 use App\Mail\AppMail;
 use App\Models\ConfirmationCode;
 use App\Models\User;
-use App\Repositories\ConfirmationCodeRepositoryInterface;
-use App\Services\ConfirmationCodeServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;

@@ -2,10 +2,11 @@
 
 namespace App\Http\Dto\Requests;
 
+use App\Interfaces\DtoInterface;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\App;
-use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\ValidatesWhenResolvedTrait;
 use Illuminate\Validation\ValidationException;
 

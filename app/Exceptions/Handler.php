@@ -16,7 +16,7 @@ final class Handler
         $exceptions->render(function (Throwable $throwable) {
 
             if ($throwable instanceof ValidationException) {
-                return new ApiFailResponse(['message' => $throwable->getMessage()], 422, 'Validation Error');
+                return new ApiFailResponse(['message' => $throwable->getMessage()], 422);
             }
 
             if ($throwable instanceof InvalidArgumentException) {
@@ -24,7 +24,7 @@ final class Handler
                     'message' => $throwable->getMessage(),
                     'file' => $throwable->getFile(),
                     'line' => $throwable->getLine()
-                ], 400, 'Bad Request');
+                ], 400);
             }
 
             if ($throwable instanceof NotFoundHttpException) {
@@ -32,7 +32,7 @@ final class Handler
                     'message' => $throwable->getMessage(),
                     'file' => $throwable->getFile(),
                     'line' => $throwable->getLine()
-                ], 404, 'Not Found');
+                ], 404);
             }
 
             return new ApiFailResponse([

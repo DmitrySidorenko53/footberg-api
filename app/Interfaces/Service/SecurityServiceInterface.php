@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Interfaces\Service;
 
-use App\Http\Dto\Requests\DtoInterface;
+use App\Interfaces\DtoInterface;
 
 interface SecurityServiceInterface
 {

@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Services;
-
-use App\Models\User;
+namespace App\Interfaces\Service;
 
 interface ConfirmationCodeServiceInterface
 {

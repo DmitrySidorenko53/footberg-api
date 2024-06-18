@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\Eloquent\Builder;
+
 abstract class BaseRepository
 {
     protected mixed $model;
@@ -38,13 +40,19 @@ abstract class BaseRepository
         return $this->relations($builder, $relations)->find($id);
     }
 
+    public function findBy($field, $value, $relations = null): Builder
+    {
+        $builder = $this->model::query();
+        return $this->relations($builder, $relations)->where($field, $value);
+    }
+
     public function findWithRelations($relations, int $limit = 0, int $offset = 0)
     {
         $builder = $this->model::query();
         return $this->relations($builder, $relations)->take($limit)->skip($offset);
     }
 
-   public function relations($builder, string|array $relations)
+   public function relations($builder, $relations)
    {
        if (!$relations) {
            return $builder;

@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Dto\Requests\Security\SecurityConfirmDto;
+use App\Http\Dto\Requests\Security\SecurityLoginDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
 use App\Http\Responses\ApiSuccessResponse;
-use App\Services\SecurityServiceInterface;
+use App\Interfaces\Service\SecurityServiceInterface;
 
 class SecurityController extends Controller
 {
@@ -39,8 +40,9 @@ class SecurityController extends Controller
         return new ApiSuccessResponse($data, 200, 'Successfully refreshed confirmation code');
     }
 
-    public function login()
+    public function login(SecurityLoginDto $dto)
     {
-
+        $data = $this->securityService->login($dto);
+        return new ApiSuccessResponse($data, 200, 'Successfully logged in');
     }
 }
