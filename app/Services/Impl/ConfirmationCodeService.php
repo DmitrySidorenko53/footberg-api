@@ -3,14 +3,12 @@
 namespace App\Services\Impl;
 
 use App\Exceptions\ServiceException;
-use App\Mail\AppMail;
 use App\Models\ConfirmationCode;
 use App\Models\User;
 use App\Repositories\ConfirmationCodeRepositoryInterface;
 use App\Services\ConfirmationCodeServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 
 class ConfirmationCodeService implements ConfirmationCodeServiceInterface
@@ -21,19 +19,6 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
     {
         $this->confirmationCodeRepository = $confirmationCodeRepository;
     }
-
-    public function sendEmail($confirmationCode, $email): void
-    {
-        Mail::to($email)
-            ->send(new AppMail(
-                [
-                    'title' => 'Confirm your account',
-                    'confirmationCode' => $confirmationCode,
-                    'recipient' => $email
-                ],
-                'confirmation-mail'));
-    }
-
 
     public function createConfirmationCode($user): array
     {
@@ -93,7 +78,8 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         return $this->confirmationCodeRepository->update($code,
             [
                 'confirmed_at' => Carbon::now(),
-                'is_confirmed' => true
+                'is_confirmed' => true,
+                'is_expired' => true
             ]
         );
     }

@@ -20,6 +20,7 @@ class AppMail extends Mailable
     public function __construct($data, $view)
     {
         $this->data = $data;
+        $this->subject = $this->data['subject'];
         $this->view = $view;
     }
 

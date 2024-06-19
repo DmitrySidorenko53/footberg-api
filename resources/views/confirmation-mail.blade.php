@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Footberg</title>
+    <title>{{ $data['subject'] }}</title>
 </head>
 <body>
-<h1>{{ $data['title'] }}</h1>
-<p>{{ $data['confirmationCode'] }}</p>
-<p>Thank you, {{$data['recipient']}}</p>
+<h2>{{$data['title']}}</h2>
+<h4>Здравствуйте, {{ $data['recipient'] }}</h4>
+<p>{{ $data['body'] }}</p>
+<p>Код подтверждения: {{ $data['additional_data']['code'] }}</p>
+<p>Действителен до: {{ $data['additional_data']['valid_until'] }}</p>
+<p>{{ $data['footer'] }}</p>
 </body>
 </html>

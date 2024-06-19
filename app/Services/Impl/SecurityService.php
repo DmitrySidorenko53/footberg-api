@@ -3,11 +3,14 @@
 namespace App\Services\Impl;
 
 
+use App\Enums\EmailScope;
 use App\Exceptions\ServiceException;
+use App\Helpers\EmailContentHelper;
 use App\Http\Dto\Requests\DtoInterface;
 use App\Http\Dto\Requests\Security\SecurityConfirmDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
+use App\Jobs\SendEmail;
 use App\Models\User;
 use App\Repositories\UserRepositoryInterface;
 use App\Services\ConfirmationCodeServiceInterface;
@@ -64,7 +67,13 @@ class SecurityService implements SecurityServiceInterface
             throw new ServiceException('Error creating code');
         }
 
-        $this->confirmationCodeService->sendEmail($code['code'], $user->email);
+        $confirmation = [
+            'confirmation' => $code,
+            'recipient' => $user->email
+        ];
+
+        $email = EmailContentHelper::build($confirmation, EmailScope::CONFIRMATION);
+        dispatch(new SendEmail($email));
 
         return [
             'user_id' => $user->user_id,
@@ -90,7 +99,13 @@ class SecurityService implements SecurityServiceInterface
             throw new ServiceException('Error refreshing code');
         }
 
-        $this->confirmationCodeService->sendEmail($code['code'], $user->email);
+        $confirmation = [
+            'confirmation' => $code,
+            'recipient' => $user->email
+        ];
+
+        $email = EmailContentHelper::build($confirmation, EmailScope::CONFIRMATION);
+        dispatch(new SendEmail($email));
 
         return [
             'user_id' => $user->user_id,
