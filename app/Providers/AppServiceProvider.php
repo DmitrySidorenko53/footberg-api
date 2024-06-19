@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\Repositories\ConfirmationCodeRepositoryInterface;
-use App\Repositories\Impl\ConfirmationCodeRepository;
-use App\Services\ConfirmationCodeServiceInterface;
-use App\Services\Impl\ConfirmationCodeService;
-use App\Services\Impl\SecurityService;
-use App\Services\SecurityServiceInterface;
+use App\Interfaces\Service\ConfirmationCodeServiceInterface;
+use App\Interfaces\Service\SecurityServiceInterface;
+use App\Interfaces\Service\SecurityTokenServiceInterface;
+use App\Services\ConfirmationCodeService;
+use App\Services\SecurityService;
+use App\Services\SecurityTokenService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,5 +31,6 @@ class AppServiceProvider extends ServiceProvider
     public array $bindings = [
         SecurityServiceInterface::class => SecurityService::class,
         ConfirmationCodeServiceInterface::class => ConfirmationCodeService::class,
+        SecurityTokenServiceInterface::class => SecurityTokenService::class,
     ];
 }

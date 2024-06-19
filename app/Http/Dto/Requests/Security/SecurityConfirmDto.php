@@ -3,7 +3,7 @@
 namespace App\Http\Dto\Requests\Security;
 
 use App\Http\Dto\Requests\AbstractDto;
-use App\Http\Dto\Requests\DtoInterface;
+use App\Interfaces\DtoInterface;
 
 class SecurityConfirmDto extends AbstractDto implements DtoInterface
 {

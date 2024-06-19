@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Repositories\Impl;
+namespace App\Repositories;
 
+use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
 use App\Models\ConfirmationCode;
-use App\Repositories\BaseRepository;
-use App\Repositories\ConfirmationCodeRepositoryInterface;
 
 class ConfirmationCodeRepository extends BaseRepository implements ConfirmationCodeRepositoryInterface
 {

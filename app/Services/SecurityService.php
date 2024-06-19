@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Impl;
+namespace App\Services;
 
 
 use App\Enums\EmailScope;
@@ -8,13 +8,16 @@ use App\Exceptions\ServiceException;
 use App\Helpers\EmailContentHelper;
 use App\Http\Dto\Requests\DtoInterface;
 use App\Http\Dto\Requests\Security\SecurityConfirmDto;
+use App\Http\Dto\Requests\Security\SecurityLoginDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
+use App\Interfaces\DtoInterface;
+use App\Interfaces\Repository\UserRepositoryInterface;
+use App\Interfaces\Service\ConfirmationCodeServiceInterface;
+use App\Interfaces\Service\SecurityServiceInterface;
+use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Jobs\SendEmail;
 use App\Models\User;
-use App\Repositories\UserRepositoryInterface;
-use App\Services\ConfirmationCodeServiceInterface;
-use App\Services\SecurityServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -26,11 +29,16 @@ class SecurityService implements SecurityServiceInterface
 {
     private UserRepositoryInterface $userRepository;
     private ConfirmationCodeServiceInterface $confirmationCodeService;
+    private SecurityTokenServiceInterface $securityTokenService;
 
-    public function __construct(UserRepositoryInterface $userRepository, ConfirmationCodeServiceInterface $confirmationCodeService)
+    public function __construct(
+        UserRepositoryInterface $userRepository,
+        ConfirmationCodeServiceInterface $confirmationCodeService,
+        SecurityTokenServiceInterface $securityTokenService)
     {
         $this->userRepository = $userRepository;
         $this->confirmationCodeService = $confirmationCodeService;
+        $this->securityTokenService = $securityTokenService;
     }
 
     /**
@@ -63,7 +71,7 @@ class SecurityService implements SecurityServiceInterface
             DB::rollBack();
         }
 
-        if (sizeof($code) == 0) {
+        if (!$code) {
             throw new ServiceException('Error creating code');
         }
 
@@ -83,7 +91,21 @@ class SecurityService implements SecurityServiceInterface
 
     public function login($dto)
     {
-        return 'login method';// TODO: Implement login() method.
+        if (!$dto instanceof SecurityLoginDto) {
+            throw new InvalidArgumentException(get_class($this) . " login method must receive a SecurityLoginDto");
+        }
+
+        $user = $this->userRepository->findBy('email', $dto->email, 'tokens')->first();
+
+        if (!$user->is_active) {
+            throw new NotFoundHttpException('There is no confirmed account with such email');
+        }
+
+        if (!Hash::check($dto->password, $user->password)) {
+            throw new InvalidArgumentException('Wrong password for specified email');
+        }
+
+        return $this->securityTokenService->generateToken($user);
     }
 
     public function refreshCode($dto)
@@ -95,7 +117,7 @@ class SecurityService implements SecurityServiceInterface
         $user = $this->userRepository->findById($dto->userId, 'codes');
         $code = $this->confirmationCodeService->refreshCode($user);
 
-        if (sizeof($code) == 0) {
+        if (!$code) {
             throw new ServiceException('Error refreshing code');
         }
 
@@ -122,6 +144,10 @@ class SecurityService implements SecurityServiceInterface
         /** @var User $user */
         $user = $this->userRepository->findById($dto->userId, 'codes');
 
+        if ($user->is_active) {
+            throw new InvalidArgumentException('User account is already active');
+        }
+
         $code = $user->getLastValidCode();
 
         if (!$this->confirmationCodeService->isValid($code, $dto->code)) {
@@ -141,7 +167,6 @@ class SecurityService implements SecurityServiceInterface
         $user->is_active = true;
         $this->userRepository->save($user);
 
-        return 'success';
-        //todo login user
+        return $this->securityTokenService->generateToken($user);
     }
 }

@@ -57,6 +57,10 @@ class User extends Authenticatable
         return $this->hasMany(ConfirmationCode::class, 'user_id', 'user_id');
     }
 
+    public function tokens(): HasMany
+    {
+        return $this->hasMany(SecurityToken::class, 'user_id', 'user_id');
+    }
 
     public function getLastValidCode(): object|null
     {

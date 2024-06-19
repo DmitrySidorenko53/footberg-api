@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Dto\Requests;
+namespace App\Interfaces;
 
 interface DtoInterface
 {
