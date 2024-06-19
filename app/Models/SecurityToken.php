@@ -51,7 +51,7 @@ class SecurityToken extends Model
     {
         return [
             'is_valid' => 'boolean',
-            'is_deleted' => 'boolean',
+            'is_deleted' => 'boolean'
         ];
     }
 
