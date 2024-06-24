@@ -9,9 +9,9 @@ use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
-final class Handler
+final class ExceptionHandler
 {
-    public static function handle(Exceptions $exceptions): void
+    public function __invoke(Exceptions $exceptions): void
     {
         $exceptions->render(function (Throwable $throwable) {
 

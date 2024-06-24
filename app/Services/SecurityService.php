@@ -6,7 +6,6 @@ namespace App\Services;
 use App\Enums\EmailScope;
 use App\Exceptions\ServiceException;
 use App\Helpers\EmailContentHelper;
-use App\Http\Dto\Requests\DtoInterface;
 use App\Http\Dto\Requests\Security\SecurityConfirmDto;
 use App\Http\Dto\Requests\Security\SecurityLoginDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
@@ -81,6 +80,7 @@ class SecurityService implements SecurityServiceInterface
         ];
 
         $email = EmailContentHelper::build($confirmation, EmailScope::CONFIRMATION);
+
         dispatch(new SendEmail($email));
 
         return [
@@ -95,6 +95,7 @@ class SecurityService implements SecurityServiceInterface
             throw new InvalidArgumentException(get_class($this) . " login method must receive a SecurityLoginDto");
         }
 
+        /** @var User $user */
         $user = $this->userRepository->findBy('email', $dto->email, 'tokens')->first();
 
         if (!$user->is_active) {
@@ -116,10 +117,6 @@ class SecurityService implements SecurityServiceInterface
 
         $user = $this->userRepository->findById($dto->userId, 'codes');
         $code = $this->confirmationCodeService->refreshCode($user);
-
-        if (!$code) {
-            throw new ServiceException('Error refreshing code');
-        }
 
         $confirmation = [
             'confirmation' => $code,
