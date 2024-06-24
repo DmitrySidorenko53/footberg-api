@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Dto\Requests\Security\SecurityConfirmDto;
 use App\Http\Dto\Requests\Security\SecurityLoginDto;
+use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
+use App\Http\Dto\Requests\Security\SecurityPasswordResetDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
+use App\Http\Dto\Requests\Security\SecurityTokenRefreshDto;
 use App\Http\Responses\ApiSuccessResponse;
 use App\Interfaces\Service\SecurityServiceInterface;
 
@@ -44,5 +47,25 @@ class SecurityController extends Controller
     {
         $data = $this->securityService->login($dto);
         return new ApiSuccessResponse($data, 200, 'Successfully logged in');
+    }
+
+    public function logout()
+    {
+
+    }
+
+    public function refreshToken(SecurityTokenRefreshDto $dto)
+    {
+
+    }
+
+    public function resetPassword(SecurityPasswordResetDto $dto)
+    {
+
+    }
+
+    public function recoveryPassword(SecurityPasswordRecoveryDto $dto)
+    {
+
     }
 }
