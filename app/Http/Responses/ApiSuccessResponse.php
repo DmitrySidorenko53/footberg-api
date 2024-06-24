@@ -16,13 +16,4 @@ class ApiSuccessResponse extends ApiResponse
             204 => StatusCode::HTTP_NO_CONTENT,
         ];
     }
-
-    protected function prepareStructure($responseStructure)
-    {
-        if ($this->message) {
-            $responseStructure['message'] = $this->message;
-        }
-        $responseStructure['data'] = $this->data;
-        return $responseStructure;
-    }
 }

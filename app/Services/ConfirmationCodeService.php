@@ -77,7 +77,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         }
         return $this->confirmationCodeRepository->update($code,
             [
-                'confirmed_at' => Carbon::now(),
+                'confirmed_at' => Carbon::now(3)->format('Y-m-d H:i:s'),
                 'is_confirmed' => true,
                 'is_expired' => true
             ]

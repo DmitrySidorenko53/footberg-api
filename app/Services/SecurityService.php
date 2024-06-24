@@ -155,6 +155,8 @@ class SecurityService implements SecurityServiceInterface
         }
 
         $user->is_active = true;
+        $user->last_login_at = Carbon::now(3)->format('Y-m-d H:i:s');
+
         $this->userRepository->save($user);
 
         return $this->securityTokenService->generateToken($user);

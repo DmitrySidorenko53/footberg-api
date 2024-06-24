@@ -21,13 +21,4 @@ class ApiFailResponse extends ApiResponse
             503 => StatusCode::HTTP_SERVICE_UNAVAILABLE
         ];
     }
-
-    protected function prepareStructure($responseStructure)
-    {
-        if ($this->message) {
-            $responseStructure['message'] = $this->message;
-        }
-        $responseStructure['errors'] = $this->data;
-        return $responseStructure;
-    }
 }

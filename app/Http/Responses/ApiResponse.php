@@ -46,7 +46,21 @@ abstract class ApiResponse extends JsonResponse
     }
 
     abstract protected function setStatusCodes();
-    abstract protected function prepareStructure($responseStructure);
+
+    private function prepareStructure($responseStructure)
+    {
+        if ($this->message) {
+            $responseStructure['message'] = $this->message;
+        }
+
+        $dataKey = $this instanceof ApiSuccessResponse ? 'data' : 'errors';
+
+        if ($this->data) {
+            $responseStructure[$dataKey] = $this->data;
+        }
+
+        return $responseStructure;
+    }
 
     private function prepareModule(): void
     {
