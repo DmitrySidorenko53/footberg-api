@@ -40,9 +40,6 @@ class SecurityService implements SecurityServiceInterface
         $this->securityTokenService = $securityTokenService;
     }
 
-    /**
-     * @throws ServiceException
-     */
     public function register($dto)
     {
         if (!$dto instanceof SecurityRegisterDto) {
@@ -68,10 +65,6 @@ class SecurityService implements SecurityServiceInterface
             DB::commit();
         } catch (Throwable) {
             DB::rollBack();
-        }
-
-        if (!$code) {
-            throw new ServiceException('Error creating code');
         }
 
         $confirmation = [

@@ -2,6 +2,7 @@ version: "3.7"
 
 services:
     server:
+        image: footberg-api-server
         build:
             context: .
             dockerfile: docker/Dockerfile
@@ -11,6 +12,19 @@ services:
             - ./:/var/www
         depends_on:
             - database
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+
+    queue:
+        image: footberg-api-server
+        container_name: server-queue
+        restart: always
+        working_dir: /var/www/
+        command: php artisan queue:work
+        depends_on:
+            - server
+        volumes:
+            - ./:/var/www
 
     database:
         image: mysql:latest

@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Exceptions\ServiceException;
 use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
-use App\Mail\AppMail;
 use App\Models\ConfirmationCode;
 use App\Models\User;
 use Carbon\Carbon;
@@ -44,7 +43,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         return [
             'code' => $code,
             'created_at' => $confirmationCode->created_at,
-            'valid_until' => $confirmationCode->valid_until
+            'valid_until' => Carbon::parse($confirmationCode->valid_until)->format('H:i:s d.m.Y')
         ];
     }
 

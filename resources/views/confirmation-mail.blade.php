@@ -9,6 +9,7 @@
 <p>{{ $data['body'] }}</p>
 <p>Код подтверждения: {{ $data['additional_data']['code'] }}</p>
 <p>Действителен до: {{ $data['additional_data']['valid_until'] }}</p>
+<p>С уважением,</p>
 <p>{{ $data['footer'] }}</p>
 </body>
 </html>
