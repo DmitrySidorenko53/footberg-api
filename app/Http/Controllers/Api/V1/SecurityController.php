@@ -8,25 +8,21 @@ use App\Http\Dto\Requests\Security\SecurityLoginDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordResetDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
-use App\Http\Dto\Requests\Security\SecurityRefreshTokenDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
+use App\Http\Dto\Requests\Security\SecurityTokenRefreshDto;
 use App\Http\Responses\ApiSuccessResponse;
 use App\Interfaces\Service\SecurityServiceInterface;
-use App\Interfaces\Service\SecurityTokenServiceInterface;
 
 class SecurityController extends Controller
 {
     private SecurityServiceInterface $securityService;
-    private SecurityTokenServiceInterface $securityTokenService;
 
     /**
      * @param SecurityServiceInterface $securityService
-     * @param SecurityTokenServiceInterface $securityTokenService
      */
-    public function __construct(SecurityServiceInterface $securityService, SecurityTokenServiceInterface $securityTokenService)
+    public function __construct(SecurityServiceInterface $securityService)
     {
         $this->securityService = $securityService;
-        $this->securityTokenService = $securityTokenService;
     }
 
     public function register(SecurityRegisterDto $dto)
@@ -58,10 +54,9 @@ class SecurityController extends Controller
 
     }
 
-    public function refreshToken(SecurityRefreshTokenDto $dto)
+    public function refreshToken(SecurityTokenRefreshDto $dto)
     {
-        $data = $this->securityTokenService->refresh($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully refreshed token');
+
     }
 
     public function resetPassword(SecurityPasswordResetDto $dto)

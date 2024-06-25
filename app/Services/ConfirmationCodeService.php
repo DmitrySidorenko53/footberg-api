@@ -30,8 +30,8 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 
         $confirmationCode = new ConfirmationCode();
         $confirmationCode->code_text = Hash::make($code);
-        $confirmationCode->created_at = Carbon::now()->format('Y-m-d H:i:s');
-        $confirmationCode->valid_until = Carbon::now()->addHours(2)->format('Y-m-d H:i:s');
+        $confirmationCode->created_at = Carbon::now(3)->format('Y-m-d H:i:s');
+        $confirmationCode->valid_until = Carbon::now(3)->addHours(2)->format('Y-m-d H:i:s');
         $confirmationCode->user_id = $user->user_id;
 
         $isSuccess = $this->confirmationCodeRepository->save($confirmationCode);
@@ -77,7 +77,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         }
         return $this->confirmationCodeRepository->update($code,
             [
-                'confirmed_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'confirmed_at' => Carbon::now(3)->format('Y-m-d H:i:s'),
                 'is_confirmed' => true,
                 'is_expired' => true
             ]
@@ -94,7 +94,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         }
 
         $validUntil = $code->valid_until;
-        $now = Carbon::createFromFormat('Y-m-d H:i:s', now());
+        $now = Carbon::createFromFormat('Y-m-d H:i:s', now(), 3);
 
         if ($now->greaterThan($validUntil)) {
             return false;

@@ -2,28 +2,22 @@
 
 namespace App\Services;
 
-use App\Helpers\StringGenerator;
-use App\Http\Dto\Requests\Security\SecurityRefreshTokenDto;
-use App\Interfaces\DtoInterface;
+use App\Helpers\GenerateString;
 use App\Interfaces\Repository\SecurityTokenRepositoryInterface;
-use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Models\SecurityToken;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
 
 class SecurityTokenService implements SecurityTokenServiceInterface
 {
     private SecurityTokenRepositoryInterface $securityTokenRepository;
-    private UserRepositoryInterface $userRepository;
 
-    public function __construct(SecurityTokenRepositoryInterface $securityTokenRepository, UserRepositoryInterface $userRepository)
+    public function __construct(SecurityTokenRepositoryInterface $securityTokenRepository)
     {
         $this->securityTokenRepository = $securityTokenRepository;
-        $this->userRepository = $userRepository;
     }
 
     public function generateToken($user)
@@ -34,38 +28,29 @@ class SecurityTokenService implements SecurityTokenServiceInterface
 
         $this->resetUserTokens($user);
 
+        $key = GenerateString::generateSecurityToken(255);
+
         $token = new SecurityToken();
-        $token->token = StringGenerator::generateSecurityToken(255);
-        $token->created_at = Carbon::now()->format('Y-m-d H:i:s');
-        $token->valid_until = Carbon::now()->addHours(8)->format('Y-m-d H:i:s');
+        $token->token = Hash::make($key);
+        $token->created_at = Carbon::now(3)->format('Y-m-d H:i:s');
+        $token->valid_until = Carbon::now(3)->addHours(8)->format('Y-m-d H:i:s');
         $token->is_valid = true;
         $token->user_id = $user->user_id;
 
         $this->securityTokenRepository->save($token);
 
         return [
-            'token' => StringGenerator::getSecurityTokenStart() . $token->token,
+            'token' => $key,
             'created_at' => $token->created_at,
             'valid_until' => $token->valid_until,
         ];
-    }
-    public function refresh(DtoInterface $dto)
-    {
-        if (!$dto instanceof SecurityRefreshTokenDto) {
-            throw new InvalidArgumentException(get_class($this) . " refresh method must receive a SecurityRefreshTokenDto");
-        }
-
-        $user = $this->userRepository->findById($dto->userId);
-
-        return $this->generateToken($user);
-
     }
 
     /**
      * @param User $user
      * @return void
      */
-    private function resetUserTokens(User $user): void
+    public function resetUserTokens(User $user): void
     {
         $tokens = $user->tokens()->pluck('token')->toArray();
 
@@ -76,9 +61,7 @@ class SecurityTokenService implements SecurityTokenServiceInterface
         $this->securityTokenRepository->updateWhereIn('token', $tokens, [
             'is_valid' => false,
             'is_deleted' => true,
-            'deleted_at' => Carbon::now()->format('Y-m-d H:i:s')
+            'deleted_at' => Carbon::now(3)->format('Y-m-d H:i:s')
         ]);
     }
-
-
 }

@@ -40,7 +40,7 @@ class SecurityService implements SecurityServiceInterface
         $this->securityTokenService = $securityTokenService;
     }
 
-    public function register(DtoInterface$dto)
+    public function register($dto)
     {
         if (!$dto instanceof SecurityRegisterDto) {
             throw new InvalidArgumentException(get_class($this) . " register method must receive a SecurityRegisterDto");
@@ -48,7 +48,7 @@ class SecurityService implements SecurityServiceInterface
         $user = new User();
         $user->email = $dto->email;
         $user->password = Hash::make($dto->password, ['rounds' => 12]);
-        $user->register_at = Carbon::now()->format('Y-m-d H:i:s');
+        $user->register_at = Carbon::now(3)->format('Y-m-d H:i:s');
 
         $code = [];
 
@@ -82,7 +82,7 @@ class SecurityService implements SecurityServiceInterface
         ];
     }
 
-    public function login(DtoInterface $dto)
+    public function login($dto)
     {
         if (!$dto instanceof SecurityLoginDto) {
             throw new InvalidArgumentException(get_class($this) . " login method must receive a SecurityLoginDto");
@@ -102,7 +102,7 @@ class SecurityService implements SecurityServiceInterface
         return $this->securityTokenService->generateToken($user);
     }
 
-    public function refreshCode(DtoInterface $dto)
+    public function refreshCode($dto)
     {
         if (!$dto instanceof SecurityRefreshCodeDto) {
             throw new InvalidArgumentException(get_class($this) . " refresh code method must receive a SecurityRefreshCodeDto");
@@ -155,7 +155,7 @@ class SecurityService implements SecurityServiceInterface
         }
 
         $user->is_active = true;
-        $user->last_login_at = Carbon::now()->format('Y-m-d H:i:s');
+        $user->last_login_at = Carbon::now(3)->format('Y-m-d H:i:s');
 
         $this->userRepository->save($user);
 
