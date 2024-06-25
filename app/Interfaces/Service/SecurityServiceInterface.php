@@ -8,6 +8,6 @@ interface SecurityServiceInterface
 {
     public function register(DtoInterface $dto);
     public function login(DtoInterface $dto);
-    public function refreshCode($dto);
+    public function refreshCode(DtoInterface $dto);
     public function confirmAccount(DtoInterface $dto);
 }
