@@ -5,16 +5,14 @@ namespace App\Http\Dto\Requests\Security;
 use App\Http\Dto\Requests\AbstractDto;
 use App\Interfaces\DtoInterface;
 
-class SecurityPasswordResetDto extends AbstractDto implements DtoInterface
+class SecurityForgotPasswordDto extends AbstractDto implements DtoInterface
 {
-    public int $userId;
-    public string $code;
+    public string $email;
 
     public function rules(): array
     {
         return [
-            'userId' => 'required|integer|exists:users,user_id',
-            'code' => 'required|string|size:6',
+            'email' => 'required|email|exists:users,email'
         ];
     }
 

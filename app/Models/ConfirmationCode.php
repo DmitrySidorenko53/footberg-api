@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon $confirmed_at
  * @property bool|int $is_confirmed
  * @property bool|int $is_expired
+ * @property string $type
  */
 class ConfirmationCode extends Model
 {
@@ -38,6 +39,7 @@ class ConfirmationCode extends Model
         'confirmed_at',
         'is_confirmed',
         'is_expired',
+        'type'
     ];
 
     public $timestamps = false;

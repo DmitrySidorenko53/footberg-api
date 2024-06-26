@@ -12,6 +12,7 @@ use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Models\SecurityToken;
 use App\Models\User;
 use Carbon\Carbon;
+use InvalidArgumentException;
 
 class SecurityTokenService implements SecurityTokenServiceInterface
 {
@@ -35,6 +36,7 @@ class SecurityTokenService implements SecurityTokenServiceInterface
 
         $this->resetUserTokens($user);
 
+        //todo save encrypted token
         $token = new SecurityToken();
         $token->token = StringGenerator::generateSecurityToken(255);
         $token->created_at = Carbon::now()->format('Y-m-d H:i:s');

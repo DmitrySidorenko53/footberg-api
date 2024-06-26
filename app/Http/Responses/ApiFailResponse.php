@@ -3,7 +3,6 @@
 namespace App\Http\Responses;
 
 use App\Enums\StatusCode;
-use InvalidArgumentException;
 
 class ApiFailResponse extends ApiResponse
 {

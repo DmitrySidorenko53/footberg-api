@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 {
@@ -25,7 +26,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      * @throws ServiceException
      * @throws InvalidIncomeTypeException
      */
-    public function createConfirmationCode($user): array
+    public function createConfirmationCode($user, $scope = 'confirm'): array
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
@@ -38,6 +39,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         $confirmationCode->created_at = Carbon::now()->format('Y-m-d H:i:s');
         $confirmationCode->valid_until = Carbon::now()->addHours(2)->format('Y-m-d H:i:s');
         $confirmationCode->user_id = $user->user_id;
+        $confirmationCode->type = $scope;
 
         $isSuccess = $this->confirmationCodeRepository->save($confirmationCode);
 
@@ -46,8 +48,8 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         }
 
         return [
-            'code' => $code,
-            'created_at' => $confirmationCode->created_at,
+            'value' => $code,
+            'created_at' => Carbon::parse($confirmationCode->created_at)->format('H:i:s d.m.Y'),
             'valid_until' => Carbon::parse($confirmationCode->valid_until)->format('H:i:s d.m.Y')
         ];
     }
@@ -56,48 +58,51 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
     /**
      * @throws ServiceException|InvalidIncomeTypeException
      */
-    public function refreshCode($user)
+    public function refreshCode($user, $scope = 'confirm')
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
         }
 
-        if ($user->is_active) {
-            throw new InvalidArgumentException(__('exceptions.already_active'));
-        }
-
-        $userCodesIds = $user->codes()->pluck('code_id')->toArray();
+        $userCodesIds = $user->codes()->where('type', $scope)->pluck('code_id')->toArray();
 
         $this->confirmationCodeRepository->updateWhereIn('code_id', $userCodesIds, [
             'is_expired' => true
         ]);
 
-        return $this->createConfirmationCode($user);
+        return $this->createConfirmationCode($user, $scope);
     }
 
     /**
-     * @throws InvalidIncomeTypeException
+     * @throws ServiceException
      */
-    public function confirmCode($code)
+    public function tryConfirmCode($code, $dto): void
     {
-        if ($code && (!$code instanceof ConfirmationCode)) {
-            throw new InvalidIncomeTypeException(__METHOD__, ConfirmationCode::class);
+        //todo dto must be PasswordResetDto or ConfirmDto
+        if (!$this->isValid($code)) {
+            throw new NotFoundHttpException('No valid codes for this user. Please refresh the code');
         }
-        return $this->confirmationCodeRepository->update($code,
-            [
-                'confirmed_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'is_confirmed' => true,
-                'is_expired' => true
-            ]
-        );
+
+        if (!Hash::check($dto->code, $code->code_text)) {
+            throw new InvalidArgumentException('Invalid confirmation code');
+        }
+
+        $isConfirmed = $this->confirmCode($code);
+
+        if (!$isConfirmed) {
+            throw new ServiceException('Error while confirmed code');
+        }
     }
 
-    public function isValid($code, $codeToCompare): bool
+    private function isValid($code): bool
     {
         if (!$code) {
             return false;
         }
         if (!$code instanceof ConfirmationCode) {
+            return false;
+        }
+        if ($code->is_expired) {
             return false;
         }
 
@@ -109,5 +114,19 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         }
 
         return true;
+    }
+
+    private function confirmCode($code)
+    {
+        if ($code && (!$code instanceof ConfirmationCode)) {
+            throw new InvalidArgumentException(get_class($this) . " refresh code method must receive a valid code model");
+        }
+        return $this->confirmationCodeRepository->update($code,
+            [
+                'confirmed_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'is_confirmed' => true,
+                'is_expired' => true
+            ]
+        );
     }
 }
