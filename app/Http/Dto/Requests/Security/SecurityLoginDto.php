@@ -13,7 +13,7 @@ class SecurityLoginDto extends AbstractDto implements DtoInterface
     public function rules(): array
     {
         return [
-            'email' => 'required|string|exists:users,email',
+            'email' => 'required|string|email|exists:users,email',
             'password' => 'required|string',
         ];
     }
@@ -22,6 +22,7 @@ class SecurityLoginDto extends AbstractDto implements DtoInterface
     {
         return [
             'email.required' => __('validation.required', ['attribute' => 'email']),
+            'email.email' => __('validation.email', ['attribute' => 'email']),
             'email.string' => __('validation.string', ['attribute' => 'email']),
             'email.exists' => __('validation.exists', ['attribute' => 'email', 'model' => User::class]),
 
