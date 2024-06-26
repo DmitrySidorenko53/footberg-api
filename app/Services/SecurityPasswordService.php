@@ -92,7 +92,6 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
             $this->confirmationCodeService->tryConfirmCode($code, $dto);
 
             $user->is_active = false;
-            $user->password = '';
 
             $this->userRepository->save($user);
         });
