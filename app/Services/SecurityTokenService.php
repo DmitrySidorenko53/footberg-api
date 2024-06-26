@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\InvalidIncomeTypeException;
 use App\Helpers\StringGenerator;
 use App\Http\Dto\Requests\Security\SecurityRefreshTokenDto;
 use App\Interfaces\DtoInterface;
@@ -11,9 +12,6 @@ use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Models\SecurityToken;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash;
-use InvalidArgumentException;
 
 class SecurityTokenService implements SecurityTokenServiceInterface
 {
@@ -26,10 +24,13 @@ class SecurityTokenService implements SecurityTokenServiceInterface
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function generateToken($user)
     {
         if ($user && (!$user instanceof User)) {
-            throw new InvalidArgumentException(get_class($this) . " generate token method must receive a valid user model");
+            throw new InvalidIncomeTypeException(__METHOD__, User::class);
         }
 
         $this->resetUserTokens($user);
@@ -49,10 +50,14 @@ class SecurityTokenService implements SecurityTokenServiceInterface
             'valid_until' => $token->valid_until,
         ];
     }
+
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function refresh(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityRefreshTokenDto) {
-            throw new InvalidArgumentException(get_class($this) . " refresh method must receive a SecurityRefreshTokenDto");
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityRefreshTokenDto::class);
         }
 
         $user = $this->userRepository->findById($dto->userId);

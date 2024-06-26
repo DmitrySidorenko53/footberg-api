@@ -19,7 +19,7 @@ final class ExceptionHandler
                 return new ApiFailResponse(['message' => $throwable->getMessage()], 422);
             }
 
-            if ($throwable instanceof InvalidArgumentException) {
+            if ($throwable instanceof InvalidArgumentException || $throwable instanceof InvalidIncomeTypeException) {
                 return new ApiFailResponse([
                     'message' => $throwable->getMessage(),
                     'file' => $throwable->getFile(),

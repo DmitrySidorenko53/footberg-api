@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
 use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
@@ -20,10 +21,14 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         $this->confirmationCodeRepository = $confirmationCodeRepository;
     }
 
+    /**
+     * @throws ServiceException
+     * @throws InvalidIncomeTypeException
+     */
     public function createConfirmationCode($user): array
     {
         if ($user && (!$user instanceof User)) {
-            throw new InvalidArgumentException(get_class($this) . " create code method must receive a valid user model");
+            throw new InvalidIncomeTypeException(__METHOD__, User::class);
         }
 
         $code = (string)rand(100000, 999999);
@@ -37,7 +42,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         $isSuccess = $this->confirmationCodeRepository->save($confirmationCode);
 
         if (!$isSuccess) {
-            throw new ServiceException('Error with create confirmation code');
+            throw new ServiceException(__('exceptions.error_while_creating', ['model' => ConfirmationCode::class]));
         }
 
         return [
@@ -49,16 +54,16 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 
 
     /**
-     * @throws ServiceException
+     * @throws ServiceException|InvalidIncomeTypeException
      */
     public function refreshCode($user)
     {
         if ($user && (!$user instanceof User)) {
-            throw new InvalidArgumentException(get_class($this) . " refresh code method must receive a valid user model");
+            throw new InvalidIncomeTypeException(__METHOD__, User::class);
         }
 
         if ($user->is_active) {
-            throw new InvalidArgumentException('User account is already active');
+            throw new InvalidArgumentException(__('exceptions.already_active'));
         }
 
         $userCodesIds = $user->codes()->pluck('code_id')->toArray();
@@ -70,10 +75,13 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         return $this->createConfirmationCode($user);
     }
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function confirmCode($code)
     {
         if ($code && (!$code instanceof ConfirmationCode)) {
-            throw new InvalidArgumentException(get_class($this) . " refresh code method must receive a valid code model");
+            throw new InvalidIncomeTypeException(__METHOD__, ConfirmationCode::class);
         }
         return $this->confirmationCodeRepository->update($code,
             [

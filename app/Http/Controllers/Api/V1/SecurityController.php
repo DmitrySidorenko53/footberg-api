@@ -32,25 +32,25 @@ class SecurityController extends Controller
     public function register(SecurityRegisterDto $dto)
     {
         $data = $this->securityService->register($dto);
-        return new ApiSuccessResponse($data, 201, 'Successfully created user account. Please confirm your account by email');
+        return new ApiSuccessResponse($data, 200, __('security.register'));
     }
 
     public function confirm(SecurityConfirmDto $dto)
     {
         $data = $this->securityService->confirmAccount($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully confirmed user account');
+        return new ApiSuccessResponse($data, 200, __('code.confirmed'));
     }
 
     public function refreshConfirmationCode(SecurityRefreshCodeDto $dto)
     {
         $data = $this->securityService->refreshCode($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully refreshed confirmation code');
+        return new ApiSuccessResponse($data, 200, __('code.refreshed'));
     }
 
     public function login(SecurityLoginDto $dto)
     {
         $data = $this->securityService->login($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully logged in');
+        return new ApiSuccessResponse($data, 200, __('security.login'));
     }
 
     public function logout()
@@ -61,7 +61,7 @@ class SecurityController extends Controller
     public function refreshToken(SecurityRefreshTokenDto $dto)
     {
         $data = $this->securityTokenService->refresh($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully refreshed token');
+        return new ApiSuccessResponse($data, 200, __('token.refreshed'));
     }
 
     public function resetPassword(SecurityPasswordResetDto $dto)
