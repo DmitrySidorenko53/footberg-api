@@ -62,11 +62,17 @@ class User extends Authenticatable
         return $this->hasMany(SecurityToken::class, 'user_id', 'user_id');
     }
 
-    public function getLastValidCode(): object|null
+    public function getLastValidCode($type = 'confirm'): object|null
     {
         return $this->codes()
             ->where('is_expired', false)
+            ->where('type', $type)
             ->orderBy('created_at', 'desc')
             ->first();
+    }
+
+    public function isActiveOrNotDeleted(): bool
+    {
+        return $this->is_active && empty($this->deleted_at);
     }
 }

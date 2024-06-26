@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Throwable;
 
 class SecurityService implements SecurityServiceInterface
 {
@@ -31,16 +30,16 @@ class SecurityService implements SecurityServiceInterface
     private SecurityTokenServiceInterface $securityTokenService;
 
     public function __construct(
-        UserRepositoryInterface $userRepository,
+        UserRepositoryInterface          $userRepository,
         ConfirmationCodeServiceInterface $confirmationCodeService,
-        SecurityTokenServiceInterface $securityTokenService)
+        SecurityTokenServiceInterface    $securityTokenService)
     {
         $this->userRepository = $userRepository;
         $this->confirmationCodeService = $confirmationCodeService;
         $this->securityTokenService = $securityTokenService;
     }
 
-    public function register(DtoInterface$dto)
+    public function register(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityRegisterDto) {
             throw new InvalidArgumentException(get_class($this) . " register method must receive a SecurityRegisterDto");
@@ -50,25 +49,18 @@ class SecurityService implements SecurityServiceInterface
         $user->password = Hash::make($dto->password, ['rounds' => 12]);
         $user->register_at = Carbon::now()->format('Y-m-d H:i:s');
 
-        $code = [];
-
-        try {
-            DB::beginTransaction();
-
+        $code = DB::transaction(function () use ($user) {
             $isSuccess = $this->userRepository->save($user);
 
             if (!$isSuccess) {
                 throw new ServiceException('Error registering user');
             }
-            $code = $this->confirmationCodeService->createConfirmationCode($user);
+            return $this->confirmationCodeService->createConfirmationCode($user);
+        });
 
-            DB::commit();
-        } catch (Throwable) {
-            DB::rollBack();
-        }
 
         $confirmation = [
-            'confirmation' => $code,
+            'code' => $code,
             'recipient' => $user->email
         ];
 
@@ -77,8 +69,8 @@ class SecurityService implements SecurityServiceInterface
         dispatch(new SendEmail($email));
 
         return [
-            'user_id' => $user->user_id,
-            'email' => $user->email
+            'userId' => $user->user_id,
+            'confirmation' => $confirmation
         ];
     }
 
@@ -91,8 +83,8 @@ class SecurityService implements SecurityServiceInterface
         /** @var User $user */
         $user = $this->userRepository->findBy('email', $dto->email, 'tokens')->first();
 
-        if (!$user->is_active) {
-            throw new NotFoundHttpException('There is no confirmed account with such email');
+        if (!$user->isActiveOrNotDeleted()) {
+            throw new NotFoundHttpException('Specified email belongs to inactive or deleted user');
         }
 
         if (!Hash::check($dto->password, $user->password)) {
@@ -109,10 +101,15 @@ class SecurityService implements SecurityServiceInterface
         }
 
         $user = $this->userRepository->findById($dto->userId, 'codes');
+
+        if ($user->is_active) {
+            throw new InvalidArgumentException('User account is already active');
+        }
+
         $code = $this->confirmationCodeService->refreshCode($user);
 
         $confirmation = [
-            'confirmation' => $code,
+            'code' => $code,
             'recipient' => $user->email
         ];
 
@@ -120,10 +117,11 @@ class SecurityService implements SecurityServiceInterface
         dispatch(new SendEmail($email));
 
         return [
-            'user_id' => $user->user_id,
-            'email' => $user->email
+            'userId' => $user->user_id,
+            'confirmation' => $confirmation
         ];
     }
+
 
     public function confirmAccount(DtoInterface $dto)
     {
@@ -140,24 +138,14 @@ class SecurityService implements SecurityServiceInterface
 
         $code = $user->getLastValidCode();
 
-        if (!$this->confirmationCodeService->isValid($code, $dto->code)) {
-            throw new NotFoundHttpException('No valid codes for this user. Please refresh the confirmation code');
-        }
+        DB::transaction(function () use ($user, $dto, $code) {
+            $this->confirmationCodeService->tryConfirmCode($code, $dto);
 
-        if (!Hash::check($dto->code, $code->code_text)) {
-            throw new InvalidArgumentException('Invalid confirmation code');
-        }
+            $user->is_active = true;
+            $user->last_login_at = Carbon::now()->format('Y-m-d H:i:s');
 
-        $isConfirmed = $this->confirmationCodeService->confirmCode($code);
-
-        if (!$isConfirmed) {
-            throw new ServiceException('Error confirming code');
-        }
-
-        $user->is_active = true;
-        $user->last_login_at = Carbon::now()->format('Y-m-d H:i:s');
-
-        $this->userRepository->save($user);
+            $this->userRepository->save($user);
+        });
 
         return $this->securityTokenService->generateToken($user);
     }

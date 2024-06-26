@@ -26,7 +26,7 @@ final class EmailContentHelper
             'title' => $pattern->title,
             'body' => $pattern->body,
             'footer' => $pattern->footer,
-            'additional_data' => $data[$scope],
+            'additional_data' => $data['code'],
             'view' => $view,
         ];
     }

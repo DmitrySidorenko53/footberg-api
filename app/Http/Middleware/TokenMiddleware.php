@@ -46,6 +46,7 @@ class TokenMiddleware
 
         $tokenCandidate = substr($tokenCandidate, $lengthOfTokenStart);
 
+        //todo search if token in db encrypted
         /** @var SecurityToken $token */
         $token = SecurityToken::query()->where('token', $tokenCandidate)
             ->where('is_valid', true)
