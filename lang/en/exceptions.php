@@ -7,4 +7,6 @@ return [
     'inactive' => 'There is no active account with such email',
     'incorrect_password' => 'Incorrect password.',
     'unsupported_locale' => 'Specified locale does not supported.',
+    'active_on_recover' => 'Unable to recover password on active account.',
+    'code_response_match' => 'Status code must match the type of response',
 ];

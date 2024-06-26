@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
+use App\Http\Dto\Requests\Security\SecurityConfirmDto;
+use App\Http\Dto\Requests\Security\SecurityPasswordResetDto;
 use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
 use App\Models\ConfirmationCode;
@@ -75,22 +77,27 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 
     /**
      * @throws ServiceException
+     * @throws InvalidIncomeTypeException
      */
     public function tryConfirmCode($code, $dto): void
     {
+        if (!$dto instanceof SecurityConfirmDto && !$dto instanceof SecurityPasswordResetDto) {
+            $dtoToProcess = $code->type == 'confirm' ? SecurityConfirmDto::class : SecurityPasswordResetDto::class;
+            throw new InvalidIncomeTypeException(__METHOD__, $dtoToProcess);
+        }
         //todo dto must be PasswordResetDto or ConfirmDto
         if (!$this->isValid($code)) {
-            throw new NotFoundHttpException('No valid codes for this user. Please refresh the code');
+            throw new NotFoundHttpException(__('code.not_found'));
         }
 
         if (!Hash::check($dto->code, $code->code_text)) {
-            throw new InvalidArgumentException('Invalid confirmation code');
+            throw new InvalidArgumentException(__('code.invalid'));
         }
 
         $isConfirmed = $this->confirmCode($code);
 
         if (!$isConfirmed) {
-            throw new ServiceException('Error while confirmed code');
+            throw new ServiceException(__('code.confirm_error'));
         }
     }
 
@@ -116,10 +123,13 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         return true;
     }
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     private function confirmCode($code)
     {
         if ($code && (!$code instanceof ConfirmationCode)) {
-            throw new InvalidArgumentException(get_class($this) . " refresh code method must receive a valid code model");
+            throw new InvalidIncomeTypeException(__METHOD__, ConfirmationCode::class);
         }
         return $this->confirmationCodeRepository->update($code,
             [

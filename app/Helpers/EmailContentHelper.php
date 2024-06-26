@@ -3,15 +3,18 @@
 namespace App\Helpers;
 
 use App\Enums\EmailScope;
+use App\Exceptions\InvalidIncomeTypeException;
 use App\Models\MailPattern;
-use InvalidArgumentException;
 
 final class EmailContentHelper
 {
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public static function build(array $data, $scope): array
     {
         if (!$scope instanceof EmailScope) {
-            throw new InvalidArgumentException('Scope must be an instance of EmailScope');
+            throw new InvalidIncomeTypeException(__METHOD__, EmailScope::class);
         }
 
         $view = $scope->value;

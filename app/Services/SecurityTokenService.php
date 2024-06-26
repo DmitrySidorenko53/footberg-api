@@ -12,7 +12,6 @@ use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Models\SecurityToken;
 use App\Models\User;
 use Carbon\Carbon;
-use InvalidArgumentException;
 
 class SecurityTokenService implements SecurityTokenServiceInterface
 {

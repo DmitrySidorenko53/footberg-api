@@ -71,18 +71,18 @@ class SecurityController extends Controller
     public function forgotPassword(SecurityForgotPasswordDto $dto)
     {
         $data = $this->securityPasswordService->forgotPassword($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully sent password reset email');
+        return new ApiSuccessResponse($data, 200, __('security.forgot_password'));
     }
 
     public function resetPassword(SecurityPasswordResetDto $dto)
     {
         $data = $this->securityPasswordService->resetPassword($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully reset password');
+        return new ApiSuccessResponse($data, 200, __('security.reset_password'));
     }
 
     public function recoveryPassword(SecurityPasswordRecoveryDto $dto)
     {
         $data = $this->securityPasswordService->recoveryPassword($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully recovery password');
+        return new ApiSuccessResponse($data, 200, __('security.recovery_password'));
     }
 }

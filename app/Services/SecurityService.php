@@ -62,14 +62,12 @@ class SecurityService implements SecurityServiceInterface
             return $this->confirmationCodeService->createConfirmationCode($user);
         });
 
-
         $confirmation = [
             'code' => $code,
             'recipient' => $user->email
         ];
 
         $email = EmailContentHelper::build($confirmation, EmailScope::CONFIRMATION);
-
         dispatch(new SendEmail($email));
 
         return [
@@ -91,7 +89,7 @@ class SecurityService implements SecurityServiceInterface
         $user = $this->userRepository->findBy('email', $dto->email, 'tokens')->first();
 
         if (!$user->isActiveOrNotDeleted()) {
-            throw new NotFoundHttpException('Specified email belongs to inactive or deleted user');
+            throw new NotFoundHttpException(__('exceptions.inactive'));
         }
 
         if (!Hash::check($dto->password, $user->password)) {
@@ -113,7 +111,7 @@ class SecurityService implements SecurityServiceInterface
         $user = $this->userRepository->findById($dto->userId, 'codes');
 
         if ($user->is_active) {
-            throw new InvalidArgumentException('User account is already active');
+            throw new InvalidArgumentException(__('exceptions.already_active'));
         }
 
         $code = $this->confirmationCodeService->refreshCode($user);
@@ -133,7 +131,6 @@ class SecurityService implements SecurityServiceInterface
     }
 
     /**
-     * @throws ServiceException
      * @throws InvalidIncomeTypeException
      */
     public function confirmAccount(DtoInterface $dto)
