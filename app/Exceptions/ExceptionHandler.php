@@ -15,31 +15,25 @@ final class ExceptionHandler
     {
         $exceptions->render(function (Throwable $throwable) {
 
+            $data = [
+                'message' => $throwable->getMessage(),
+                'file' => $throwable->getFile(),
+                'line' => $throwable->getLine()
+            ];
+
             if ($throwable instanceof ValidationException) {
-                return new ApiFailResponse(['message' => $throwable->getMessage()], 422);
+                return new ApiFailResponse([$throwable->errors()], 422);
             }
 
-            if ($throwable instanceof InvalidArgumentException) {
-                return new ApiFailResponse([
-                    'message' => $throwable->getMessage(),
-                    'file' => $throwable->getFile(),
-                    'line' => $throwable->getLine()
-                ], 400);
+            if ($throwable instanceof InvalidArgumentException || $throwable instanceof InvalidIncomeTypeException) {
+                return new ApiFailResponse($data, 400);
             }
 
             if ($throwable instanceof NotFoundHttpException) {
-                return new ApiFailResponse([
-                    'message' => $throwable->getMessage(),
-                    'file' => $throwable->getFile(),
-                    'line' => $throwable->getLine()
-                ], 404);
+                return new ApiFailResponse($data, 404);
             }
 
-            return new ApiFailResponse([
-                'message' => $throwable->getMessage(),
-                'file' => $throwable->getFile(),
-                'line' => $throwable->getLine(),
-            ], 500);
+            return new ApiFailResponse($data, 500);
         });
     }
 }

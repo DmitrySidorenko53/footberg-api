@@ -4,6 +4,7 @@ namespace App\Services;
 
 
 use App\Enums\EmailScope;
+use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
 use App\Helpers\EmailContentHelper;
 use App\Http\Dto\Requests\Security\SecurityConfirmDto;
@@ -39,10 +40,13 @@ class SecurityService implements SecurityServiceInterface
         $this->securityTokenService = $securityTokenService;
     }
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function register(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityRegisterDto) {
-            throw new InvalidArgumentException(get_class($this) . " register method must receive a SecurityRegisterDto");
+            throw new InvalidIncomeTypeException(__METHOD__,SecurityRegisterDto::class);
         }
         $user = new User();
         $user->email = $dto->email;
@@ -53,11 +57,10 @@ class SecurityService implements SecurityServiceInterface
             $isSuccess = $this->userRepository->save($user);
 
             if (!$isSuccess) {
-                throw new ServiceException('Error registering user');
+                throw new ServiceException(__('exceptions.error_while_creating', ['model' => User::class]));
             }
             return $this->confirmationCodeService->createConfirmationCode($user);
         });
-
 
         $confirmation = [
             'code' => $code,
@@ -65,7 +68,6 @@ class SecurityService implements SecurityServiceInterface
         ];
 
         $email = EmailContentHelper::build($confirmation, EmailScope::CONFIRMATION);
-
         dispatch(new SendEmail($email));
 
         return [
@@ -74,36 +76,42 @@ class SecurityService implements SecurityServiceInterface
         ];
     }
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function login(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityLoginDto) {
-            throw new InvalidArgumentException(get_class($this) . " login method must receive a SecurityLoginDto");
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityLoginDto::class);
         }
 
         /** @var User $user */
         $user = $this->userRepository->findBy('email', $dto->email, 'tokens')->first();
 
         if (!$user->isActiveOrNotDeleted()) {
-            throw new NotFoundHttpException('Specified email belongs to inactive or deleted user');
+            throw new NotFoundHttpException(__('exceptions.inactive'));
         }
 
         if (!Hash::check($dto->password, $user->password)) {
-            throw new InvalidArgumentException('Wrong password for specified email');
+            throw new InvalidArgumentException(__('exceptions.incorrect_password'));
         }
 
         return $this->securityTokenService->generateToken($user);
     }
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function refreshCode(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityRefreshCodeDto) {
-            throw new InvalidArgumentException(get_class($this) . " refresh code method must receive a SecurityRefreshCodeDto");
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityRefreshCodeDto::class);
         }
 
         $user = $this->userRepository->findById($dto->userId, 'codes');
 
         if ($user->is_active) {
-            throw new InvalidArgumentException('User account is already active');
+            throw new InvalidArgumentException(__('exceptions.already_active'));
         }
 
         $code = $this->confirmationCodeService->refreshCode($user);
@@ -122,18 +130,20 @@ class SecurityService implements SecurityServiceInterface
         ];
     }
 
-
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function confirmAccount(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityConfirmDto) {
-            throw new InvalidArgumentException(get_class($this) . " confirm method must receive a SecurityConfirmDto");
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityConfirmDto::class);
         }
 
         /** @var User $user */
         $user = $this->userRepository->findById($dto->userId, 'codes');
 
         if ($user->is_active) {
-            throw new InvalidArgumentException('User account is already active');
+            throw new InvalidArgumentException(__('exceptions.already_active'));
         }
 
         $code = $user->getLastValidCode();

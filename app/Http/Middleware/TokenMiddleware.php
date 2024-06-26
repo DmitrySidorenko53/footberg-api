@@ -19,19 +19,11 @@ class TokenMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $authHeader = $request->header('Authorization');
+        $tokenCandidate = $request->bearerToken();
 
-        if (!$authHeader) {
-            return new ApiFailResponse([], 401, 'There is no authorization header');
+        if (!$tokenCandidate) {
+            return new ApiFailResponse([], 400, __('token.invalid_type'));
         }
-
-        $authType = config('auth.api_auth_type');
-
-        if (!str_starts_with($authHeader, $authType)) {
-            return new ApiFailResponse([], 400, 'Invalid authorization type');
-        }
-
-        $tokenCandidate = substr($authHeader, strlen($authType) + 1);
 
         $tokenTemplateStart = StringGenerator::getSecurityTokenStart();
 
@@ -41,7 +33,7 @@ class TokenMiddleware
         $tokenCandidateStart = trim($tokenCandidateStart);
 
         if ($tokenTemplateStart !== $tokenCandidateStart) {
-            return new ApiFailResponse([], 400, 'Invalid token format');
+            return new ApiFailResponse([], 400, __('token.invalid_format'));
         }
 
         $tokenCandidate = substr($tokenCandidate, $lengthOfTokenStart);
@@ -55,18 +47,20 @@ class TokenMiddleware
             ->first();
 
         if (!$token) {
-            return new ApiFailResponse([], 400, 'Invalid token');
+            return new ApiFailResponse([], 400, __('token.invalid'));
         }
 
         if ($token->valid_until < now()) {
-            return new ApiFailResponse([], 400, 'Token is expired. Need to refresh token');
+            return new ApiFailResponse([], 400, __('token.expired'));
         }
 
         $candidate = $token->user;
 
-        if ($candidate) {
-            Auth::setUser($candidate);
+        if (!$candidate) {
+            return new ApiFailResponse([], 400, __('token.no_user'));
         }
+
+        Auth::setUser($candidate);
 
         return $next($request);
     }

@@ -41,48 +41,48 @@ class SecurityController extends Controller
     public function register(SecurityRegisterDto $dto)
     {
         $data = $this->securityService->register($dto);
-        return new ApiSuccessResponse($data, 201, 'Successfully created user account. Please confirm your account by email');
+        return new ApiSuccessResponse($data, 200, __('security.register'));
     }
 
     public function confirm(SecurityConfirmDto $dto)
     {
         $data = $this->securityService->confirmAccount($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully confirmed user account');
+        return new ApiSuccessResponse($data, 200, __('code.confirmed'));
     }
 
     public function refreshConfirmationCode(SecurityRefreshCodeDto $dto)
     {
         $data = $this->securityService->refreshCode($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully refreshed confirmation code');
+        return new ApiSuccessResponse($data, 200, __('code.refreshed'));
     }
 
     public function login(SecurityLoginDto $dto)
     {
         $data = $this->securityService->login($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully logged in');
+        return new ApiSuccessResponse($data, 200, __('security.login'));
     }
 
     public function refreshToken(SecurityRefreshTokenDto $dto)
     {
         $data = $this->securityTokenService->refresh($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully refreshed token');
+        return new ApiSuccessResponse($data, 200, __('token.refreshed'));
     }
 
     public function forgotPassword(SecurityForgotPasswordDto $dto)
     {
         $data = $this->securityPasswordService->forgotPassword($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully sent password reset email');
+        return new ApiSuccessResponse($data, 200, __('security.forgot_password'));
     }
 
     public function resetPassword(SecurityPasswordResetDto $dto)
     {
         $data = $this->securityPasswordService->resetPassword($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully reset password');
+        return new ApiSuccessResponse($data, 200, __('security.reset_password'));
     }
 
     public function recoveryPassword(SecurityPasswordRecoveryDto $dto)
     {
         $data = $this->securityPasswordService->recoveryPassword($dto);
-        return new ApiSuccessResponse($data, 200, 'Successfully recovery password');
+        return new ApiSuccessResponse($data, 200, __('security.recovery_password'));
     }
 }

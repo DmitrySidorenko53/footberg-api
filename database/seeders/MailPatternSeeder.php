@@ -12,7 +12,7 @@ class MailPatternSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('mail_patterns')->insert([
+        DB::table('mail_patterns')->insertOrIgnore([
             [
                 'scope' => 'confirmation',
                 'subject' => 'Подтвердите аккаунт',

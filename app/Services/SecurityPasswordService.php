@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\EmailScope;
+use App\Exceptions\InvalidIncomeTypeException;
 use App\Helpers\EmailContentHelper;
 use App\Http\Dto\Requests\Security\SecurityForgotPasswordDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
@@ -43,17 +44,20 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
     }
 
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function forgotPassword(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityForgotPasswordDto) {
-            throw new InvalidArgumentException(get_class($this) . " confirm method must receive a SecurityForgotPasswordDto");
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityForgotPasswordDto::class);
         }
 
         /** @var User $user */
         $user = $this->userRepository->findBy('email', $dto->email)->first();
 
         if (!$user->isActiveOrNotDeleted()) {
-            throw new NotFoundHttpException('User is inactive or deleted');
+            throw new NotFoundHttpException(__('exceptions.inactive'));
         }
 
         $code = $this->confirmationCodeService->refreshCode($user, 'reset');
@@ -73,17 +77,20 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
     }
 
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function resetPassword(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityPasswordResetDto) {
-            throw new InvalidArgumentException(get_class($this) . " reset password method must receive a SecurityPasswordResetDto");
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityPasswordResetDto::class);
         }
 
         /** @var User $user */
         $user = $this->userRepository->findById($dto->userId, 'codes');
 
         if (!$user->isActiveOrNotDeleted()) {
-            throw new NotFoundHttpException('User is inactive or deleted');
+            throw new NotFoundHttpException(__('exceptions.inactive'));
         }
 
         $code = $user->getLastValidCode('reset');
@@ -102,16 +109,19 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
         ];
     }
 
+    /**
+     * @throws InvalidIncomeTypeException
+     */
     public function recoveryPassword(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityPasswordRecoveryDto) {
-            throw new InvalidArgumentException(get_class($this) . " reset password method must receive a SecurityPasswordResetDto");
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityPasswordRecoveryDto::class);
         }
 
         $user = $this->userRepository->findById($dto->userId);
 
         if ($user->is_active) {
-            throw new InvalidArgumentException('Unable to recover password on active account');
+            throw new InvalidArgumentException(__('exceptions.active_on_recover'));
         }
 
         $user->password = Hash::make($dto->password, ['rounds' => 12]);

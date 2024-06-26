@@ -4,6 +4,7 @@ namespace App\Http\Dto\Requests\Security;
 
 use App\Http\Dto\Requests\AbstractDto;
 use App\Interfaces\DtoInterface;
+use App\Models\User;
 
 class SecurityConfirmDto extends AbstractDto implements DtoInterface
 {
@@ -20,6 +21,14 @@ class SecurityConfirmDto extends AbstractDto implements DtoInterface
 
     public function messages(): array
     {
-        return [];
+        return [
+            'userId.required' => __('validation.required', ['attribute' =>  'userId']),
+            'userId.integer' => __('validation.integer', ['attribute' =>  'userId']),
+            'userId.exists' => __('validation.exists', ['attribute' =>  'userId', 'model' => User::class]),
+
+            'code.required' => __('validation.required', ['attribute' =>  'code']),
+            'code.string' => __('validation.string', ['attribute' =>  'code']),
+            'code.size' => __('validation.size', ['attribute' => 'code', 'size' => 6]),
+        ];
     }
 }
