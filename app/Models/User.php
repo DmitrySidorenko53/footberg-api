@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -60,6 +61,18 @@ class User extends Authenticatable
     public function tokens(): HasMany
     {
         return $this->hasMany(SecurityToken::class, 'user_id', 'user_id');
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id')->using(RoleUser::class);
+    }
+
+    public function getRoles()
+    {
+        $builder = $this->roles();
+        $sql = $builder->toSql();
+        return $builder->pluck('role_name')->toArray();
     }
 
     public function getLastValidCode($type = 'confirm'): object|null

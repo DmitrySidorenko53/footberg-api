@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum EmailScope: string
+enum EmailScopeEnum: string
 {
     case CONFIRMATION = 'confirmation-mail';
     case RESET = 'reset-password-mail';

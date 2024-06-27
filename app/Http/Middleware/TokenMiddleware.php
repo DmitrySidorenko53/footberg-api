@@ -43,7 +43,7 @@ class TokenMiddleware
         $token = SecurityToken::query()->where('token', $tokenCandidate)
             ->where('is_valid', true)
             ->where('is_deleted', false)
-            ->with('user')
+            ->with('user.roles')
             ->first();
 
         if (!$token) {

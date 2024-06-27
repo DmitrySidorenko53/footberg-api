@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\EmailScope;
+use App\Enums\EmailScopeEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Helpers\EmailContentHelper;
 use App\Http\Dto\Requests\Security\SecurityForgotPasswordDto;
@@ -13,7 +13,7 @@ use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
 use App\Interfaces\Service\SecurityPasswordServiceInterface;
 use App\Interfaces\Service\SecurityTokenServiceInterface;
-use App\Jobs\SendEmail;
+use App\Jobs\SendEmailJob;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -67,8 +67,8 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
             'recipient' => $user->email
         ];
 
-        $email = EmailContentHelper::build($reset, EmailScope::RESET);
-        dispatch(new SendEmail($email));
+        $email = EmailContentHelper::build($reset, EmailScopeEnum::RESET);
+        dispatch(new SendEmailJob($email));
 
         return [
             'userId' => $user->user_id,

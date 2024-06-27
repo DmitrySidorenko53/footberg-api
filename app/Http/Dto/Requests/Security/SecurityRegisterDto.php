@@ -27,7 +27,7 @@ class SecurityRegisterDto extends AbstractDto
             'email.string' => __('validation.string', ['attribute' => 'email']),
             'email.email' => __('validation.email', ['attribute' => 'email']),
             'email.exists' => __('validation.exists', ['attribute' => 'email', 'model' => User::class]),
-            'email.max' => __('validation.max.string', ['attribute' => 'email', 'size' => 255]),
+            'email.max' => __('validation.max', ['attribute' => 'email', 'size' => 255]),
 
             'password.required' => __('validation.required', ['attribute' => 'password']),
             'password.string' => __('validation.string', ['attribute' => 'password']),

@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Enums\EmailScope;
+use App\Enums\EmailScopeEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Models\MailPattern;
 
@@ -13,8 +13,8 @@ final class EmailContentHelper
      */
     public static function build(array $data, $scope): array
     {
-        if (!$scope instanceof EmailScope) {
-            throw new InvalidIncomeTypeException(__METHOD__, EmailScope::class);
+        if (!$scope instanceof EmailScopeEnum) {
+            throw new InvalidIncomeTypeException(__METHOD__, EmailScopeEnum::class);
         }
 
         $view = $scope->value;

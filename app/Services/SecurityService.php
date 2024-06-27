@@ -3,7 +3,8 @@
 namespace App\Services;
 
 
-use App\Enums\EmailScope;
+use App\Enums\EmailScopeEnum;
+use App\Enums\RoleNameEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
 use App\Helpers\EmailContentHelper;
@@ -12,11 +13,14 @@ use App\Http\Dto\Requests\Security\SecurityLoginDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
 use App\Interfaces\DtoInterface;
+use App\Interfaces\Repository\RoleUserRepositoryInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
 use App\Interfaces\Service\SecurityServiceInterface;
 use App\Interfaces\Service\SecurityTokenServiceInterface;
-use App\Jobs\SendEmail;
+use App\Jobs\SendEmailJob;
+use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -27,17 +31,20 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class SecurityService implements SecurityServiceInterface
 {
     private UserRepositoryInterface $userRepository;
+    private RoleUserRepositoryInterface $roleUserRepository;
     private ConfirmationCodeServiceInterface $confirmationCodeService;
     private SecurityTokenServiceInterface $securityTokenService;
 
     public function __construct(
         UserRepositoryInterface          $userRepository,
         ConfirmationCodeServiceInterface $confirmationCodeService,
-        SecurityTokenServiceInterface    $securityTokenService)
+        SecurityTokenServiceInterface    $securityTokenService,
+        RoleUserRepositoryInterface $roleUserRepository)
     {
         $this->userRepository = $userRepository;
         $this->confirmationCodeService = $confirmationCodeService;
         $this->securityTokenService = $securityTokenService;
+        $this->roleUserRepository = $roleUserRepository;
     }
 
     /**
@@ -67,8 +74,8 @@ class SecurityService implements SecurityServiceInterface
             'recipient' => $user->email
         ];
 
-        $email = EmailContentHelper::build($confirmation, EmailScope::CONFIRMATION);
-        dispatch(new SendEmail($email));
+        $email = EmailContentHelper::build($confirmation, EmailScopeEnum::CONFIRMATION);
+        dispatch(new SendEmailJob($email));
 
         return [
             'userId' => $user->user_id,
@@ -121,8 +128,8 @@ class SecurityService implements SecurityServiceInterface
             'recipient' => $user->email
         ];
 
-        $email = EmailContentHelper::build($confirmation, EmailScope::CONFIRMATION);
-        dispatch(new SendEmail($email));
+        $email = EmailContentHelper::build($confirmation, EmailScopeEnum::CONFIRMATION);
+        dispatch(new SendEmailJob($email));
 
         return [
             'userId' => $user->user_id,
@@ -155,6 +162,11 @@ class SecurityService implements SecurityServiceInterface
             $user->last_login_at = Carbon::now()->format('Y-m-d H:i:s');
 
             $this->userRepository->save($user);
+
+            $roleUser = new RoleUser();
+            $roleUser->user_id = $user->user_id;
+            $roleUser->role_id = RoleNameEnum::VISITOR->value;
+            $this->roleUserRepository->save($roleUser);
         });
 
         return $this->securityTokenService->generateToken($user);

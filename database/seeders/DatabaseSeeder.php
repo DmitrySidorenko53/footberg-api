@@ -13,7 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             MailPatternSeeder::class,
-            SupportedLocaleSeeder::class
+            SupportedLocaleSeeder::class,
+            RoleSeeder::class,
         ]);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum StatusCode: string
+enum StatusCodeEnum: string
 {
     case HTTP_OK = 'ok';
     case HTTP_CREATED = 'created';
