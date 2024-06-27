@@ -4,7 +4,7 @@ namespace App\Services;
 
 
 use App\Enums\EmailScopeEnum;
-use App\Enums\RoleNameEnum;
+use App\Enums\RoleEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
 use App\Helpers\EmailContentHelper;
@@ -165,7 +165,7 @@ class SecurityService implements SecurityServiceInterface
 
             $roleUser = new RoleUser();
             $roleUser->user_id = $user->user_id;
-            $roleUser->role_id = RoleNameEnum::VISITOR->value;
+            $roleUser->role_id = RoleEnum::VISITOR->value;
             $this->roleUserRepository->save($roleUser);
         });
 
