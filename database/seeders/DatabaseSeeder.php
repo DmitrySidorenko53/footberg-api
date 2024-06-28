@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             MailPatternSeeder::class,
             SupportedLocaleSeeder::class,
             RoleSeeder::class,
+            EducationalDegreeSeeder::class,
+            EducationalInstitutionSeeder::class
         ]);
     }
 }

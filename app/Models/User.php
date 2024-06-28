@@ -68,13 +68,6 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id')->using(RoleUser::class);
     }
 
-    public function getRoles()
-    {
-        $builder = $this->roles();
-        $sql = $builder->toSql();
-        return $builder->pluck('role_name')->toArray();
-    }
-
     public function getLastValidCode($type = 'confirm'): object|null
     {
         return $this->codes()
