@@ -18,7 +18,8 @@ final class ExceptionHandler
             $data = [
                 'message' => $throwable->getMessage(),
                 'file' => $throwable->getFile(),
-                'line' => $throwable->getLine()
+                'line' => $throwable->getLine(),
+                //'trace' => $throwable->getTrace(),
             ];
 
             if ($throwable instanceof ValidationException) {

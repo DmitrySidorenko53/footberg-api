@@ -20,12 +20,28 @@ class RoleSeeder extends Seeder
     {
         $cases = RoleEnum::cases();
         $roles = [];
-        foreach ($cases as $case) {
+        foreach ($cases as $key => $case) {
             $roles[] = [
                 'role_id' => $case->value,
-                'shortcut' => $case->name
+                'shortcut' => $case->name,
+                'description' => $this->descriptions()[$key]
             ];
         }
         return $roles;
+    }
+
+    private function descriptions(): array
+    {
+        return [
+            'Закупщик',
+            'Дилер',
+            'Интерн',
+            'Медсестра/медбрат',
+            'Врач-хирург',
+            'Ветеринар врач-хирург',
+            'Студент',
+            'Посититель',
+            'Администратор'
+        ];
     }
 }

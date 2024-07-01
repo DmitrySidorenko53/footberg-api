@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -66,6 +67,16 @@ class User extends Authenticatable
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id')->using(RoleUser::class);
+    }
+
+    public function details(): HasOne
+    {
+        return $this->hasOne(AccountDetails::class, 'user_id', 'user_id');
+    }
+
+    public function educations(): BelongsToMany
+    {
+        return $this->belongsToMany(EducationalInstitution::class, 'user_education', 'user_id', 'education_id')->using(UserEducation::class);
     }
 
     public function getLastValidCode($type = 'confirm'): object|null

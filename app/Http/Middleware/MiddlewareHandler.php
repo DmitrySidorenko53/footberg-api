@@ -8,7 +8,6 @@ final class MiddlewareHandler
 {
     protected array $aliases = [
         'token' => TokenMiddleware::class,
-        'locale' => LocaleMiddleware::class
     ];
 
     public function __invoke(Middleware $middleware): Middleware

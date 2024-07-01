@@ -22,7 +22,7 @@ class TokenMiddleware
         $tokenCandidate = $request->bearerToken();
 
         if (!$tokenCandidate) {
-            return new ApiFailResponse([], 400, __('token.invalid_type'));
+            return new ApiFailResponse([], 401, __('token.invalid_type'));
         }
 
         $tokenTemplateStart = StringGenerator::getSecurityTokenStart();
@@ -33,7 +33,7 @@ class TokenMiddleware
         $tokenCandidateStart = trim($tokenCandidateStart);
 
         if ($tokenTemplateStart !== $tokenCandidateStart) {
-            return new ApiFailResponse([], 400, __('token.invalid_format'));
+            return new ApiFailResponse([], 401, __('token.invalid_format'));
         }
 
         $tokenCandidate = substr($tokenCandidate, $lengthOfTokenStart);
@@ -47,17 +47,17 @@ class TokenMiddleware
             ->first();
 
         if (!$token) {
-            return new ApiFailResponse([], 400, __('token.invalid'));
+            return new ApiFailResponse([], 401, __('token.invalid'));
         }
 
         if ($token->valid_until < now()) {
-            return new ApiFailResponse([], 400, __('token.expired'));
+            return new ApiFailResponse([], 401, __('token.expired'));
         }
 
         $candidate = $token->user;
 
         if (!$candidate) {
-            return new ApiFailResponse([], 400, __('token.no_user'));
+            return new ApiFailResponse([], 401, __('token.no_user'));
         }
 
         Auth::setUser($candidate);

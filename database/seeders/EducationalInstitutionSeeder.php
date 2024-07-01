@@ -21,42 +21,52 @@ class EducationalInstitutionSeeder extends Seeder
 
         return [
             [
+                'id' => 1,
                 'title' => 'Витебская ордена «Знак Почета» государственная академия ветеринарной медицины',
                 'degree' => EducationDegreeEnum::HIGHER->name
             ],
             [
+                'id' => 2,
                 'title' => 'Гродненский государственный аграрный университет',
                 'degree' => EducationDegreeEnum::HIGHER->name
             ],
             [
+                'id' => 3,
                 'title' => 'Аграрный колледж «ВГАВМ»',
                 'degree' => EducationDegreeEnum::SECONDARY->name
             ],
             [
+                'id' => 4,
                 'title' => 'Волковысский государственный аграрный колледж',
                 'degree' => EducationDegreeEnum::SECONDARY->name
             ],
             [
+                'id' => 5,
                 'title' => 'Ильянский государственный аграрный колледж',
                 'degree' => EducationDegreeEnum::SECONDARY->name
             ],
             [
+                'id' => 6,
                 'title' => 'Климовичский колледж',
                 'degree' => EducationDegreeEnum::SECONDARY->name
             ],
             [
+                'id' => 7,
                 'title' => 'Ляховичский государственный аграрный колледж',
                 'degree' => EducationDegreeEnum::SECONDARY->name
             ],
             [
+                'id' => 8,
                 'title' => 'Пинский государственный аграрный технологический колледж',
                 'degree' => EducationDegreeEnum::SECONDARY->name
             ],
             [
+                'id' => 9,
                 'title' => 'Речицкий государственный аграрный колледж',
                 'degree' => EducationDegreeEnum::SECONDARY->name
             ],
             [
+                'id' => 10,
                 'title' => 'Смиловичский государственный аграрный колледж',
                 'degree' => EducationDegreeEnum::SECONDARY->name
             ],

@@ -4,17 +4,17 @@ namespace App\Enums;
 
 enum EducationDegreeEnum: string
 {
-    case HIGHER = 'Higher Education';
-    case SECONDARY = 'Secondary Special Education';
+    case HIGHER = 'Высшее образование';
+    case SECONDARY = 'Средне-специальное образование';
 
-    public static function keys(bool $key = true): array
+    public static function keys(bool $key = true, $asString = false): array|string
     {
         $cases = self::cases();
         $keys = [];
         foreach ($cases as $case) {
             $keys[] = $key ? strtolower($case->name) : $case->value;
         }
-        return $keys;
+        return $asString ? implode('|', $keys) : $keys ;
     }
 
 }

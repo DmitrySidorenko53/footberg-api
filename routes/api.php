@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\SecurityController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,17 @@ Route::group(
                 Route::post('/password/forgot', [SecurityController::class, 'forgotPassword']);
                 Route::post('/password/reset', [SecurityController::class, 'resetPassword']);
                 Route::post('/password/recovery', [SecurityController::class, 'recoveryPassword']);
+            }
+        );
+
+        Route::group(
+            [
+                'prefix' => 'profile',
+                'middleware' => ['token']
+            ],
+            function () {
+                Route::post('/fill', [ProfileController::class, 'fill']);
+                Route::get('/show/{id?}', [ProfileController::class, 'show']);
             }
         );
     });

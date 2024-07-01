@@ -16,8 +16,19 @@ abstract class BaseRepository
         $this->model = $model;
     }
 
-    public function create(array $data) {
+    public function insertGetId(array $data)
+    {
         return $this->model::query()->insertGetId($data);
+    }
+
+    public function insert($data)
+    {
+        return $this->model::query()->insert($data);
+    }
+
+    public function insertIgnore($data)
+    {
+        return $this->model::query()->insertOrIgnore($data);
     }
 
     public function save($model)
@@ -25,13 +36,28 @@ abstract class BaseRepository
         return $model->save();
     }
 
-    public function update($model, array $data) {
+    public function updateOrInsert($model, $data)
+    {
+        return $this->model::query()->updateOrInsert($model, $data);
+    }
+
+    public function update($model, array $data)
+    {
         return $model->update($data);
     }
 
     public function updateWhereIn($field, $values, array $data): int
     {
-       return $this->model::query()->whereIn($field, $values)->update($data);
+        return $this->model::query()->whereIn($field, $values)->update($data);
+    }
+
+    public function findWithFilters(array $filters)
+    {
+        $builder = $this->model::query();
+        foreach ($filters as $field => $value) {
+            $builder->where($field, $value);
+        }
+        return $builder;
     }
 
     public function findById(int $id, $relations = null)
@@ -52,27 +78,61 @@ abstract class BaseRepository
         return $this->relations($builder, $relations)->take($limit)->skip($offset);
     }
 
-   public function relations($builder, $relations)
-   {
-       if (!$relations) {
-           return $builder;
-       }
+    public function countBy($field, $value, $relations = null): int
+    {
+        return $this->findBy($field, $value, $relations)->count();
+    }
 
-       if (is_string($relations)) {
-           $builder->with($relations);
-           return $builder;
-       }
 
-       foreach ($relations as $relation) {
-           $builder->with($relation);
-       }
+    public function delete($model)
+    {
+        return $model->delete();
+    }
 
-       return $builder;
-   }
+    public function deleteById(int $id)
+    {
+        return $this->model::query()->destroy($id);
+    }
 
-   public function filter($builder)
-   {
+    public function deleteBy(string $field, $value)
+    {
+        return $this->model::query()->where($field, $value)->delete();
+    }
 
-   }
+    public function deleteWhereIn($field, $values): int
+    {
+        return $this->model::query()->whereIn($field, $values)->delete();
+    }
 
+    public function deleteWithFilters(array $filters)
+    {
+        $builder = $this->model::query();
+        foreach ($filters as $field => $value) {
+            $builder->where($field, $value);
+        }
+        return $builder->delete();
+    }
+
+    private function relations($builder, $relations)
+    {
+        if (!$relations) {
+            return $builder;
+        }
+
+        if (is_string($relations)) {
+            $builder->with($relations);
+            return $builder;
+        }
+
+        foreach ($relations as $relation) {
+            $builder->with($relation);
+        }
+
+        return $builder;
+    }
+
+    public function filter($builder, array $filters)
+    {
+
+    }
 }

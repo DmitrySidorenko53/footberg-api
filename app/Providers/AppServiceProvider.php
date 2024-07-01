@@ -3,10 +3,16 @@
 namespace App\Providers;
 
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
+use App\Interfaces\Service\EducationServiceInterface;
+use App\Interfaces\Service\ProfileServiceInterface;
+use App\Interfaces\Service\RoleServiceInterface;
 use App\Interfaces\Service\SecurityPasswordServiceInterface;
 use App\Interfaces\Service\SecurityServiceInterface;
 use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Services\ConfirmationCodeService;
+use App\Services\EducationService;
+use App\Services\ProfileService;
+use App\Services\RoleService;
 use App\Services\SecurityPasswordService;
 use App\Services\SecurityService;
 use App\Services\SecurityTokenService;
@@ -35,5 +41,8 @@ class AppServiceProvider extends ServiceProvider
         ConfirmationCodeServiceInterface::class => ConfirmationCodeService::class,
         SecurityTokenServiceInterface::class => SecurityTokenService::class,
         SecurityPasswordServiceInterface::class => SecurityPasswordService::class,
+        ProfileServiceInterface::class => ProfileService::class,
+        RoleServiceInterface::class => RoleService::class,
+        EducationServiceInterface::class => EducationService::class
     ];
 }
