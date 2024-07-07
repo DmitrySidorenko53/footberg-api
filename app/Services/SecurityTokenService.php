@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Helpers\StringGenerator;
 use App\Http\Dto\Requests\Security\SecurityRefreshTokenDto;
+use App\Http\Dto\Response\Security\GeneratedTokenDto;
 use App\Interfaces\DtoInterface;
 use App\Interfaces\Repository\SecurityTokenRepositoryInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
@@ -45,11 +46,7 @@ class SecurityTokenService implements SecurityTokenServiceInterface
 
         $this->securityTokenRepository->save($token);
 
-        return [
-            'token' => StringGenerator::getSecurityTokenStart() . $token->token,
-            'created_at' => $token->created_at,
-            'valid_until' => $token->valid_until,
-        ];
+        return (new GeneratedTokenDto($token))->build();
     }
 
     /**

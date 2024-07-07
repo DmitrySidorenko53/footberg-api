@@ -19,7 +19,6 @@ use App\Interfaces\Service\ConfirmationCodeServiceInterface;
 use App\Interfaces\Service\SecurityServiceInterface;
 use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Jobs\SendEmailJob;
-use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
 use Carbon\Carbon;
@@ -39,7 +38,7 @@ class SecurityService implements SecurityServiceInterface
         UserRepositoryInterface          $userRepository,
         ConfirmationCodeServiceInterface $confirmationCodeService,
         SecurityTokenServiceInterface    $securityTokenService,
-        RoleUserRepositoryInterface $roleUserRepository)
+        RoleUserRepositoryInterface      $roleUserRepository)
     {
         $this->userRepository = $userRepository;
         $this->confirmationCodeService = $confirmationCodeService;
@@ -53,7 +52,7 @@ class SecurityService implements SecurityServiceInterface
     public function register(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityRegisterDto) {
-            throw new InvalidIncomeTypeException(__METHOD__,SecurityRegisterDto::class);
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityRegisterDto::class);
         }
         $user = new User();
         $user->email = $dto->email;

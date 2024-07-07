@@ -13,28 +13,35 @@ abstract class AbstractDto
      */
     public function __construct($class, $model)
     {
+        if (!$model) {
+            return;
+        }
         if (!$model instanceof $class) {
             throw new InvalidIncomeTypeException(__METHOD__, $class);
         }
         $this->model = $model;
     }
 
-    abstract public function build($data): self;
+    abstract public function build($data = []): self;
 
-    /**
-     * @throws InvalidIncomeTypeException
-     */
-    public function setCollection($key, $collection): static
+    public function setCollection($key, $requireDto, $data): static
     {
-        if (!$collection) {
+        if ($data->isEmpty()) {
             return $this;
         }
 
-        if (!$collection instanceof ApiCollection){
-            throw new InvalidIncomeTypeException(__METHOD__, ApiCollection::class);
-        }
+        $collection = new ApiCollection($data, $requireDto);
 
-        $this->setProperty($key, $collection->getData());
+        $this->{$key} = $collection->getData();
+        return $this;
+    }
+
+    public function setDto($key, $requireDto, $model, $data = []): static
+    {
+        if (!$model) {
+            return $this;
+        }
+        $this->{$key} = (new $requireDto($model))->build($data);
         return $this;
     }
 

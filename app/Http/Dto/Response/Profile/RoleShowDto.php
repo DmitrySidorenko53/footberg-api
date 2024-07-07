@@ -16,9 +16,9 @@ class RoleShowDto extends AbstractDto
     public function build($data = []): AbstractDto
     {
         return $this
-            ->setProperty('roleId', $this->model->role_id)
+            ->setProperty('role_id', $this->model->role_id)
             ->setProperty('shortcut', $this->model->shortcut)
             ->setProperty('description', $this->model->description)
-            ->setProperty('usersCount', $this->model->usersCount());
+            ->setProperty('users_count', $this->model->usersCount());
     }
 }

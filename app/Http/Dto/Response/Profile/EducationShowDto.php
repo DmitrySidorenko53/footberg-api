@@ -26,8 +26,8 @@ class EducationShowDto extends AbstractDto
             ->setProperty('degree',
                 (new DegreeShowDto($this->model->degree))->build()
             )
-            ->setDateTime('startDate', $this->model->pivot->start_date, 'Y-m-d')
-            ->setDateTime('endDate', $this->model->pivot->end_date, 'Y-m-d')
-            ->setProperty('usersCount', $this->model->usersCount());
+            ->setDateTime('start_date', $this->model->pivot->start_date, 'Y-m-d')
+            ->setDateTime('end_date', $this->model->pivot->end_date, 'Y-m-d')
+            ->setProperty('users_count', $this->model->usersCount());
     }
 }

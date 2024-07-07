@@ -2,11 +2,12 @@
 
 namespace App\Interfaces\Service;
 
+use App\Http\Dto\Response\AbstractDto;
 use App\Interfaces\DtoInterface;
 
 interface ProfileServiceInterface
 {
-    public function fillDetails(DtoInterface $dto, $user);
+    public function fillDetails(DtoInterface $dto, $user): AbstractDto;
 
-    public function getDetailsByUserId($userId, $isMy);
+    public function getDetailsByUserId($userId, $isMy): AbstractDto;
 }

@@ -38,7 +38,7 @@ class ProfileService implements ProfileServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function fillDetails(DtoInterface $dto, $user)
+    public function fillDetails(DtoInterface $dto, $user): AbstractDto
     {
         if (!$dto instanceof ProfileFillDto) {
             throw new InvalidIncomeTypeException(__METHOD__, ProfileFillDto::class);

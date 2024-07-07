@@ -18,6 +18,6 @@ class DegreeShowDto extends AbstractDto
         return $this
             ->setProperty('degree_id', $this->model->degree)
             ->setProperty('description', $this->model->description)
-            ->setProperty('institutionCount', $this->model->getInstitutionCount());
+            ->setProperty('institution_count', $this->model->getInstitutionCount());
     }
 }
