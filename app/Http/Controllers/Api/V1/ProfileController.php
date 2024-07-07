@@ -26,8 +26,9 @@ class ProfileController extends Controller
 
     public function show($id = null)
     {
-        $authId = Auth::id();
-        $data = $this->profileService->getDetailsByUserId($authId, $id);
+        $userId = $id ? (int)$id : Auth::id();
+        $isMy = ($id && $id == Auth::id()) || $id === null;
+        $data = $this->profileService->getDetailsByUserId($userId, $isMy);
         return new ApiSuccessResponse($data, 200);
     }
 }

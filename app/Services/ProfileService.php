@@ -4,10 +4,10 @@ namespace App\Services;
 
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Http\Dto\Requests\Profile\ProfileFillDto;
+use App\Http\Dto\Response\AbstractDto;
+use App\Http\Dto\Response\Profile\ProfileShowDto;
 use App\Interfaces\DtoInterface;
 use App\Interfaces\Repository\AccountDetailsRepositoryInterface;
-use App\Interfaces\Repository\RoleUserRepositoryInterface;
-use App\Interfaces\Repository\UserEducationRepositoryInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\EducationServiceInterface;
 use App\Interfaces\Service\ProfileServiceInterface;
@@ -26,11 +26,13 @@ class ProfileService implements ProfileServiceInterface
         AccountDetailsRepositoryInterface $accountDetailsRepository,
         RoleServiceInterface              $roleService,
         EducationServiceInterface         $educationService,
+        UserRepositoryInterface           $userRepository,
     )
     {
         $this->accountDetailsRepository = $accountDetailsRepository;
         $this->roleService = $roleService;
         $this->educationService = $educationService;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -61,35 +63,30 @@ class ProfileService implements ProfileServiceInterface
                 $details->attributesToArray()
             );
 
-            $this->roleService->refreshUsersRoles($user, $dto->roleIds);
+            $roleIds = $dto->roleIds ?? [];
+            $this->roleService->refreshUsersRoles($user, $roleIds);
 
             $educationIds = $dto->educationIds ?? [];
             $educations = $dto->educations ?? [];
-
             $this->educationService->refreshEducationsForUser($user, $educationIds, $educations);
         });
 
-        return $dto;
+        return $this->getDetailsByUserId($user->user_id, true);
     }
 
-    public function getDetailsByUserId($authId, $searchId)
+    /**
+     * @throws InvalidIncomeTypeException
+     */
+    public function getDetailsByUserId($userId, $isMy): AbstractDto
     {
-        if ($searchId == null || $searchId == $authId) {
-            $isMy = true;
-            $userId = $authId;
-        }
-
-        else {
-            $isMy = false;
-            $userId = $searchId;
-        }
-
-        $details = $this->userRepository->findById($userId, [
-            'details',
-            'educations.degree',
+        $user = $this->userRepository->findById($userId, [
             'roles',
+            'educations.degree',
+            'details'
         ]);
 
-        //todo return new DetailsDto;
+        return (new ProfileShowDto($user))->build([
+            'is_my' => $isMy
+        ]);
     }
 }

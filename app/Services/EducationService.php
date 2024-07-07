@@ -30,7 +30,7 @@ class EducationService implements EducationServiceInterface
 
     public function refreshEducationsForUser($user, array $educationIds, array $educations): void
     {
-        if (!$educationIds || !$educations) {
+        if (!$educationIds && !$educations) {
             return;
         }
 

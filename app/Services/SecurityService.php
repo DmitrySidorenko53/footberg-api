@@ -103,6 +103,9 @@ class SecurityService implements SecurityServiceInterface
             throw new InvalidArgumentException(__('exceptions.incorrect_password'));
         }
 
+        $user->last_login_at = Carbon::now()->format('Y-m-d H:i:s');
+        $this->userRepository->save($user);
+
         return $this->securityTokenService->generateToken($user);
     }
 

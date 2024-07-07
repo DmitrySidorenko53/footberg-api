@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  *
  * @property int $id
  * @property string $title
- * @property string $degree
+ * @property string $degree_id
  */
 class EducationalInstitution extends Model
 {
@@ -24,17 +24,22 @@ class EducationalInstitution extends Model
 
     protected $fillable = [
         'title',
-        'degree'
+        'degree_id'
     ];
     public $timestamps = false;
 
     public function degree(): BelongsTo
     {
-        return $this->belongsTo(EducationalDegree::class, 'degree');
+        return $this->belongsTo(EducationalDegree::class, 'degree_id');
     }
 
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_education', 'education_id', 'user_id')->using(UserEducation::class);
+    }
+
+    public function usersCount(): int
+    {
+        return $this->users()->count();
     }
 }

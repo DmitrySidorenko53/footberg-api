@@ -24,9 +24,4 @@ class UserEducation extends Pivot
     protected $guarded = [];
 
     public $timestamps = false;
-
-    protected $casts = [
-        'start_date' => 'datetime:m-Y',
-        'end_date' => 'datetime:m-Y',
-    ];
 }

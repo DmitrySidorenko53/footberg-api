@@ -33,6 +33,11 @@ class EducationalDegree extends Model
 
     public function educationalInstitutions(): HasMany
     {
-        return $this->hasMany(EducationalInstitution::class, 'degree', 'degree');
+        return $this->hasMany(EducationalInstitution::class, 'degree_id', 'degree');
+    }
+
+    public function getInstitutionCount(): int
+    {
+        return $this->educationalInstitutions()->count();
     }
 }

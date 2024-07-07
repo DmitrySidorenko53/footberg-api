@@ -9,6 +9,7 @@ use App\Interfaces\DtoInterface;
 use App\Models\EducationalInstitution;
 use Illuminate\Validation\Rule;
 
+//todo make specialization as model
 
 class ProfileFillDto extends AbstractDto implements DtoInterface
 {
@@ -32,7 +33,7 @@ class ProfileFillDto extends AbstractDto implements DtoInterface
             'birthDate' => 'nullable|date',
             'workplace' => 'nullable|string|between:2,255',
             'specialization' => 'string|between:2,255|required_with:educations,educationIds',
-            'position' => 'string|between:2,255|required_with:workplace',
+            'position' => 'string|between:2,255|required_with:workplace|exclude_without:workplace',
             'roleIds' => 'required|array|max:2',
             'roleIds.*' => ['required', 'integer', Rule::in(RoleEnum::keys(RoleEnum::visibleRoles(), true))],
             'educationIds' => 'array|max:6',

@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Class Role
  *
  * @property int $role_id
- * @property string $role_name
+ * @property string $shortcut
+ * @property string $description
  */
 class Role extends Model
 {
@@ -21,7 +22,8 @@ class Role extends Model
     protected $table = 'roles';
 
     protected $fillable = [
-        'role_name',
+        'shortcut',
+        'description'
     ];
 
     public $timestamps = false;
@@ -29,5 +31,10 @@ class Role extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'role_user', 'role_id', 'user_id')->using(RoleUser::class);
+    }
+
+    public function usersCount(): int
+    {
+        return $this->users()->count();
     }
 }

@@ -8,5 +8,5 @@ interface ProfileServiceInterface
 {
     public function fillDetails(DtoInterface $dto, $user);
 
-    public function getDetailsByUserId($authId, $searchId);
+    public function getDetailsByUserId($userId, $isMy);
 }

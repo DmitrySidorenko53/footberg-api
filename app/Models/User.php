@@ -76,7 +76,9 @@ class User extends Authenticatable
 
     public function educations(): BelongsToMany
     {
-        return $this->belongsToMany(EducationalInstitution::class, 'user_education', 'user_id', 'education_id')->using(UserEducation::class);
+        return $this->belongsToMany(EducationalInstitution::class, 'user_education', 'user_id', 'education_id')
+            ->using(UserEducation::class)
+            ->withPivot('start_date', 'end_date');
     }
 
     public function getLastValidCode($type = 'confirm'): object|null
