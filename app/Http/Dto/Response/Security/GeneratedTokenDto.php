@@ -6,6 +6,13 @@ use App\Helpers\StringGenerator;
 use App\Http\Dto\Response\AbstractDto;
 use App\Models\SecurityToken;
 
+/**
+ * Class GeneratedTokenDto
+ *
+ * @property string $token
+ * @property string $created_at
+ * @property string $valid_until
+ */
 class GeneratedTokenDto extends AbstractDto
 {
 

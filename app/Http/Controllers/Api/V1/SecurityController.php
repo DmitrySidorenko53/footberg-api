@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Dto\Requests\Security\SecurityConfirmDto;
+use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityForgotPasswordDto;
 use App\Http\Dto\Requests\Security\SecurityLoginDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
-use App\Http\Dto\Requests\Security\SecurityPasswordResetDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshTokenDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
@@ -44,7 +43,7 @@ class SecurityController extends Controller
         return new ApiSuccessResponse($data, 200, __('security.register'));
     }
 
-    public function confirm(SecurityConfirmDto $dto)
+    public function confirm(SecurityCodeDto $dto)
     {
         $data = $this->securityService->confirmAccount($dto);
         return new ApiSuccessResponse($data, 200, __('code.confirmed'));
@@ -74,7 +73,7 @@ class SecurityController extends Controller
         return new ApiSuccessResponse($data, 200, __('security.forgot_password'));
     }
 
-    public function resetPassword(SecurityPasswordResetDto $dto)
+    public function resetPassword(SecurityCodeDto $dto)
     {
         $data = $this->securityPasswordService->resetPassword($dto);
         return new ApiSuccessResponse($data, 200, __('security.reset_password'));

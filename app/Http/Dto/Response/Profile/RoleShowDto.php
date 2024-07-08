@@ -5,6 +5,14 @@ namespace App\Http\Dto\Response\Profile;
 use App\Http\Dto\Response\AbstractDto;
 use App\Models\Role;
 
+/**
+ * Class RoleShowDto
+ *
+ * @property int $role_id
+ * @property int $users_count
+ * @property string $description
+ * @property string $shortcut
+ */
 class RoleShowDto extends AbstractDto
 {
 

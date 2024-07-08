@@ -5,6 +5,15 @@ namespace App\Http\Dto\Response\Profile;
 use App\Http\Dto\Response\AbstractDto;
 use App\Models\AccountDetails;
 
+/**
+ * Class AccountDetailsDto
+ * @property string $surname
+ * @property string $name
+ * @property string $patronymic
+ * @property string $birthdate
+ * @property string $workplace
+ * @property string $position
+ */
 class AccountDetailsDto extends AbstractDto
 {
 

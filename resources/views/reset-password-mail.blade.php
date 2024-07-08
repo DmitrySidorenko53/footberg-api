@@ -7,8 +7,8 @@
 <h2>{{$data['title']}}</h2>
 <h4>Здравствуйте, {{ $data['recipient'] }}</h4>
 <p>{{ $data['body'] }}</p>
-<p>Код для сброса пароля: {{ $data['additional_data']['value'] }}</p>
-<p>Действителен до: {{ $data['additional_data']['valid_until'] }}</p>
+<p>Код для сброса пароля: {{ $data['additional_data']->code }}</p>
+<p>Действителен до: {{ $data['additional_data']->valid_until }}</p>
 <p>С уважением,</p>
 <p>{{ $data['footer'] }}</p>
 </body>

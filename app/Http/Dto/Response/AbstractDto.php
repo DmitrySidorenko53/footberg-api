@@ -5,9 +5,11 @@ namespace App\Http\Dto\Response;
 use App\Exceptions\InvalidIncomeTypeException;
 use Carbon\Carbon;
 
+//todo unset model property
 abstract class AbstractDto
 {
     protected $model;
+
     /**
      * @throws InvalidIncomeTypeException
      */
@@ -56,11 +58,14 @@ abstract class AbstractDto
 
     public function setDateTime($key, $value, $format = 'Y-m-d H:i:s'): static
     {
-       if (!Carbon::canBeCreatedFromFormat($value, $format)) {
-           return $this;
-       }
-       $this->{$key} = $value;
-       return $this;
+        $datetime = Carbon::parse($value)->format($format);
+
+        if (!Carbon::canBeCreatedFromFormat($datetime, $format)) {
+            return $this;
+        }
+
+        $this->{$key} = $datetime;
+        return $this;
     }
 
     public function getProperty($key)

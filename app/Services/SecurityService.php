@@ -8,7 +8,7 @@ use App\Enums\RoleEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
 use App\Helpers\EmailContentHelper;
-use App\Http\Dto\Requests\Security\SecurityConfirmDto;
+use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityLoginDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
@@ -68,18 +68,10 @@ class SecurityService implements SecurityServiceInterface
             return $this->confirmationCodeService->createConfirmationCode($user);
         });
 
-        $confirmation = [
-            'code' => $code,
-            'recipient' => $user->email
-        ];
-
-        $email = EmailContentHelper::build($confirmation, EmailScopeEnum::CONFIRMATION);
+        $email = EmailContentHelper::build($code, EmailScopeEnum::CONFIRMATION);
         dispatch(new SendEmailJob($email));
 
-        return [
-            'userId' => $user->user_id,
-            'confirmation' => $confirmation
-        ];
+        return $code;
     }
 
     /**
@@ -125,18 +117,10 @@ class SecurityService implements SecurityServiceInterface
 
         $code = $this->confirmationCodeService->refreshCode($user);
 
-        $confirmation = [
-            'code' => $code,
-            'recipient' => $user->email
-        ];
-
-        $email = EmailContentHelper::build($confirmation, EmailScopeEnum::CONFIRMATION);
+        $email = EmailContentHelper::build($code, EmailScopeEnum::CONFIRMATION);
         dispatch(new SendEmailJob($email));
 
-        return [
-            'userId' => $user->user_id,
-            'confirmation' => $confirmation
-        ];
+        return $code;
     }
 
     /**
@@ -144,8 +128,8 @@ class SecurityService implements SecurityServiceInterface
      */
     public function confirmAccount(DtoInterface $dto)
     {
-        if (!$dto instanceof SecurityConfirmDto) {
-            throw new InvalidIncomeTypeException(__METHOD__, SecurityConfirmDto::class);
+        if (!$dto instanceof SecurityCodeDto) {
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityCodeDto::class);
         }
 
         /** @var User $user */

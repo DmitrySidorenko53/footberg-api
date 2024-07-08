@@ -2,11 +2,22 @@
 
 namespace App\Http\Dto\Response\Profile;
 
-use App\Exceptions\InvalidIncomeTypeException;
 use App\Http\Dto\Response\AbstractDto;
 use App\Http\Dto\Response\ApiCollection;
 use App\Models\User;
 
+/**
+ * Class ProfileShowDto
+ * @property int $user_id
+ * @property string $email
+ * @property string $last_login_at
+ * @property string $register_at
+ * @property string $deleted_at
+ * @property bool is_active
+ * @property AccountDetailsDto $details
+ * @property ApiCollection $educations
+ * @property ApiCollection $roles
+ */
 class ProfileShowDto extends AbstractDto
 {
 
@@ -15,7 +26,6 @@ class ProfileShowDto extends AbstractDto
         parent::__construct(User::class, $user);
     }
 
-    //todo unset model property
     public function build($data = []): AbstractDto
     {
         $isMy = $data && array_key_exists('is_my', $data) && $data['is_my'];
@@ -30,7 +40,9 @@ class ProfileShowDto extends AbstractDto
         } else {
             $this
                 ->setDateTime('last_login_at', $this->model->last_login_at)
-                ->setDateTime('register_at', $this->model->register_at);
+                ->setDateTime('register_at', $this->model->register_at)
+                ->setProperty('is_active', $this->model->is_active)
+                ->setDateTime('deleted_at', $this->model->deleted_at);
         }
         return $dto;
     }

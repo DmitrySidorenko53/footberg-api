@@ -5,9 +5,9 @@ namespace App\Services;
 use App\Enums\EmailScopeEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Helpers\EmailContentHelper;
+use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityForgotPasswordDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
-use App\Http\Dto\Requests\Security\SecurityPasswordResetDto;
 use App\Interfaces\DtoInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
@@ -47,6 +47,7 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
+    //todo not more than five times in a day
     public function forgotPassword(DtoInterface $dto)
     {
         if (!$dto instanceof SecurityForgotPasswordDto) {
@@ -62,18 +63,11 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
 
         $code = $this->confirmationCodeService->refreshCode($user, 'reset');
 
-        $reset = [
-            'code' => $code,
-            'recipient' => $user->email
-        ];
 
-        $email = EmailContentHelper::build($reset, EmailScopeEnum::RESET);
+        $email = EmailContentHelper::build($code, EmailScopeEnum::RESET);
         dispatch(new SendEmailJob($email));
 
-        return [
-            'userId' => $user->user_id,
-            'reset' => $reset
-        ];
+        return $code;
     }
 
 
@@ -82,8 +76,8 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
      */
     public function resetPassword(DtoInterface $dto)
     {
-        if (!$dto instanceof SecurityPasswordResetDto) {
-            throw new InvalidIncomeTypeException(__METHOD__, SecurityPasswordResetDto::class);
+        if (!$dto instanceof SecurityCodeDto) {
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityCodeDto::class);
         }
 
         /** @var User $user */
@@ -102,11 +96,6 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
 
             $this->userRepository->save($user);
         });
-
-        return [
-            'userId' => $user->user_id,
-            'ableToLogin' => false,
-        ];
     }
 
     /**

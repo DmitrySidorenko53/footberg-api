@@ -4,8 +4,9 @@ namespace App\Services;
 
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
-use App\Http\Dto\Requests\Security\SecurityConfirmDto;
-use App\Http\Dto\Requests\Security\SecurityPasswordResetDto;
+use App\Http\Dto\Requests\Security\SecurityCodeDto;
+use App\Http\Dto\Response\Security\ConfirmationCodeDto;
+use App\Http\Dto\Response\Security\ResetPasswordCodeDto;
 use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
 use App\Models\ConfirmationCode;
@@ -28,7 +29,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      * @throws ServiceException
      * @throws InvalidIncomeTypeException
      */
-    public function createConfirmationCode($user, $scope = 'confirm'): array
+    public function createConfirmationCode($user, $scope = 'confirm'): \App\Http\Dto\Response\AbstractDto
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
@@ -49,11 +50,12 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
             throw new ServiceException(__('exceptions.error_while_creating', ['model' => ConfirmationCode::class]));
         }
 
-        return [
-            'value' => $code,
-            'created_at' => Carbon::parse($confirmationCode->created_at)->format('H:i:s d.m.Y'),
-            'valid_until' => Carbon::parse($confirmationCode->valid_until)->format('H:i:s d.m.Y')
-        ];
+        $dto = ($scope == 'confirm') ? ConfirmationCodeDto::class : ResetPasswordCodeDto::class;
+
+        return (new $dto($confirmationCode))
+            ->build([
+                'code' => $code
+            ]);
     }
 
 
@@ -81,11 +83,10 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      */
     public function tryConfirmCode($code, $dto): void
     {
-        if (!$dto instanceof SecurityConfirmDto && !$dto instanceof SecurityPasswordResetDto) {
-            $dtoToProcess = $code->type == 'confirm' ? SecurityConfirmDto::class : SecurityPasswordResetDto::class;
-            throw new InvalidIncomeTypeException(__METHOD__, $dtoToProcess);
+        if (!$dto instanceof SecurityCodeDto) {
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityCodeDto::class);
         }
-        //todo dto must be PasswordResetDto or ConfirmDto
+
         if (!$this->isValid($code)) {
             throw new NotFoundHttpException(__('code.not_found'));
         }

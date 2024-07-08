@@ -7,6 +7,15 @@ use App\Exceptions\InvalidIncomeTypeException;
 use App\Http\Dto\Response\AbstractDto;
 use App\Models\EducationalInstitution;
 
+/**
+ * Class EducationShowDto
+ * @property int $education_id
+ * @property int $users_count
+ * @property string $title
+ * @property string $start_date
+ * @property string $end_date
+ * @property DegreeShowDto $degree
+ */
 class EducationShowDto extends AbstractDto
 {
 

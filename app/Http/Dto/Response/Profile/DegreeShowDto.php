@@ -5,6 +5,12 @@ namespace App\Http\Dto\Response\Profile;
 use App\Http\Dto\Response\AbstractDto;
 use App\Models\EducationalDegree;
 
+/**
+ * Class DegreeShowDto
+ * @property string $degree_id
+ * @property string $description
+ * @property int $institution_count
+ */
 class DegreeShowDto extends AbstractDto
 {
 
