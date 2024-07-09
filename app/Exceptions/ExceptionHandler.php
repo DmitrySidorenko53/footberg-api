@@ -34,6 +34,10 @@ final class ExceptionHandler
                 return new ApiFailResponse($data, 404);
             }
 
+            if ($throwable instanceof TooManyRequestsException) {
+                return new ApiFailResponse($data, 429);
+            }
+
             return new ApiFailResponse($data, 500);
         });
     }

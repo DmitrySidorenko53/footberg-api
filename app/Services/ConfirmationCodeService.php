@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
+use App\Exceptions\TooManyRequestsException;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Response\Security\ConfirmationCodeDto;
 use App\Http\Dto\Response\Security\ResetPasswordCodeDto;
@@ -59,13 +60,30 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
     }
 
 
+    //todo code: 2 times in a day
+
     /**
      * @throws ServiceException|InvalidIncomeTypeException
+     * @throws TooManyRequestsException
      */
     public function refreshCode($user, $scope = 'confirm')
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
+        }
+
+        $countOfSendCodeForToday = $this->countSentCodesForToday($user);
+
+        if ($countOfSendCodeForToday > 3) {
+            throw new TooManyRequestsException(__('code.too_many_attempts'));
+        }
+
+        /** @var ConfirmationCode $lastValidCode */
+        $lastValidCode = $user->getLastValidCode($scope);
+        $whenAbleSendNewCode = Carbon::parse($lastValidCode->created_at)->addMinutes(10);
+
+        if (now()->greaterThan($whenAbleSendNewCode)) {
+            throw new TooManyRequestsException(__('code.repeat_later'));
         }
 
         $userCodesIds = $user->codes()->where('type', $scope)->pluck('code_id')->toArray();
@@ -92,6 +110,8 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         }
 
         if (!Hash::check($dto->code, $code->code_text)) {
+            $code->is_expired = true;
+            $this->confirmationCodeRepository->save($code);
             throw new InvalidArgumentException(__('code.invalid'));
         }
 
@@ -139,5 +159,10 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
                 'is_expired' => true
             ]
         );
+    }
+
+    private function countSentCodesForToday($user): int
+    {
+       return 0;
     }
 }
