@@ -46,7 +46,7 @@ class SecurityTokenService implements SecurityTokenServiceInterface
 
         $this->securityTokenRepository->save($token);
 
-        return (new GeneratedTokenDto($token))->build();
+        return GeneratedTokenDto::create($token);
     }
 
     /**

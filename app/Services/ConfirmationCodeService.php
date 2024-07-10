@@ -53,10 +53,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 
         $dto = ($scope == 'confirm') ? ConfirmationCodeDto::class : ResetPasswordCodeDto::class;
 
-        return (new $dto($confirmationCode))
-            ->build([
-                'code' => $code
-            ]);
+        return $dto::create($confirmationCode, ['code' => $code]);
     }
 
 

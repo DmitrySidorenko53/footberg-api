@@ -5,7 +5,6 @@ namespace App\Http\Dto\Response;
 use App\Exceptions\InvalidIncomeTypeException;
 use Carbon\Carbon;
 
-//todo unset model property
 abstract class AbstractDto
 {
     protected $model;
@@ -24,7 +23,22 @@ abstract class AbstractDto
         $this->model = $model;
     }
 
-    abstract public function build($data = []): self;
+    /**
+     * @throws InvalidIncomeTypeException
+     */
+    public static function create($model, $additionalData = []): AbstractDto
+    {
+        $instance = (new static($model))->build($additionalData);
+
+        if (isset($instance->model)) {
+            unset($instance->model);
+        }
+
+        return $instance;
+    }
+
+
+    abstract protected function build($additionalData = []): self;
 
     public function setCollection($key, $requireDto, $data): static
     {
@@ -38,12 +52,12 @@ abstract class AbstractDto
         return $this;
     }
 
-    public function setDto($key, $requireDto, $model, $data = []): static
+    public function setDto($key, $requireDto, $model, $additionalData = []): static
     {
         if (!$model) {
             return $this;
         }
-        $this->{$key} = (new $requireDto($model))->build($data);
+        $this->{$key} = $requireDto::create($model, $additionalData);
         return $this;
     }
 

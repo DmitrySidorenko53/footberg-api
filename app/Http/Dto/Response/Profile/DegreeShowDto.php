@@ -19,7 +19,7 @@ class DegreeShowDto extends AbstractDto
         parent::__construct(EducationalDegree::class, $degree);
     }
 
-    public function build($data = []): AbstractDto
+    protected function build($additionalData = []): AbstractDto
     {
         return $this
             ->setProperty('degree_id', $this->model->degree)

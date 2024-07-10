@@ -21,7 +21,7 @@ class RoleShowDto extends AbstractDto
         parent::__construct(Role::class, $role);
     }
 
-    public function build($data = []): AbstractDto
+    protected function build($additionalData = []): AbstractDto
     {
         return $this
             ->setProperty('role_id', $this->model->role_id)
