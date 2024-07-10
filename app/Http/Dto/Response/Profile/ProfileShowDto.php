@@ -26,9 +26,9 @@ class ProfileShowDto extends AbstractDto
         parent::__construct(User::class, $user);
     }
 
-    public function build($data = []): AbstractDto
+    protected function build($additionalData = []): AbstractDto
     {
-        $isMy = $data && array_key_exists('is_my', $data) && $data['is_my'];
+        $isMy = $additionalData && array_key_exists('is_my', $additionalData) && $additionalData['is_my'];
         $dto = $this
             ->setProperty('user_id', $this->model->user_id)
             ->setProperty('email', $this->model->email)

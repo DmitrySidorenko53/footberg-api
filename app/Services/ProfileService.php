@@ -85,8 +85,6 @@ class ProfileService implements ProfileServiceInterface
             'details'
         ]);
 
-        return (new ProfileShowDto($user))->build([
-            'is_my' => $isMy
-        ]);
+        return ProfileShowDto::create($user, ['is_my' => $isMy]);
     }
 }

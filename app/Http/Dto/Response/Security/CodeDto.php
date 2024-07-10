@@ -20,10 +20,10 @@ class CodeDto extends AbstractDto
         parent::__construct(ConfirmationCode::class, $code);
     }
 
-    public function build($data = []): AbstractDto
+    protected function build($additionalData = []): AbstractDto
     {
         return $this
-            ->setProperty('code', (int) $data['code'])
+            ->setProperty('code', (int) $additionalData['code'])
             ->setDateTime('created_at', $this->model->created_at, 'H:i:s d.m.Y')
             ->setDateTime('valid_until', $this->model->valid_until, 'H:i:s d.m.Y');
     }

@@ -22,7 +22,7 @@ class AccountDetailsDto extends AbstractDto
         parent::__construct(AccountDetails::class, $details);
     }
 
-    public function build($data = []): AbstractDto
+    protected function build($additionalData = []): AbstractDto
     {
         return $this
             ->setProperty('surname', $this->model->surname)

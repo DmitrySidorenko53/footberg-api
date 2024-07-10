@@ -27,14 +27,12 @@ class EducationShowDto extends AbstractDto
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function build($data = []): AbstractDto
+    protected function build($additionalData = []): AbstractDto
     {
         return $this
             ->setProperty('education_id', $this->model->id)
             ->setProperty('title', $this->model->title)
-            ->setProperty('degree',
-                (new DegreeShowDto($this->model->degree))->build()
-            )
+            ->setDto('degree',DegreeShowDto::class, $this->model->degree)
             ->setDateTime('start_date', $this->model->pivot->start_date, 'Y-m-d')
             ->setDateTime('end_date', $this->model->pivot->end_date, 'Y-m-d')
             ->setProperty('users_count', $this->model->usersCount());

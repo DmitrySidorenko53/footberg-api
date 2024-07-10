@@ -19,14 +19,14 @@ class ConfirmationCodeDto extends CodeDto
         parent::__construct($code);
     }
 
-    public function build($data = []): AbstractDto
+    protected function build($additionalData = []): AbstractDto
     {
         return $this
             ->setProperty('user_id', $this->model->user_id)
             ->setDto('confirmation',
                 CodeDto::class,
                 $this->model,
-                $data
+                $additionalData
             )
             ->setProperty('recipient', $this->model->user->email);
     }

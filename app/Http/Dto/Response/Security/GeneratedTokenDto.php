@@ -20,7 +20,7 @@ class GeneratedTokenDto extends AbstractDto
     {
         parent::__construct(SecurityToken::class, $token);
     }
-    public function build($data = []): AbstractDto
+    protected function build($additionalData = []): AbstractDto
     {
         return $this
             ->setProperty('token', StringGenerator::getSecurityTokenStart() . $this->model->token)

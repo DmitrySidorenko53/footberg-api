@@ -6,10 +6,10 @@ class ApiCollection
 {
     protected array $data;
 
-    public function __construct($data, string $requireDto)
+    public function __construct($data, $requireDto, $additionalData = [])
     {
         foreach ($data as $model) {
-            $this->data[] = (new $requireDto($model))->build();
+            $this->data[] = $requireDto::create($model, $additionalData);
         }
     }
 
