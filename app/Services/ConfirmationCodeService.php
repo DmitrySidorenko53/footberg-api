@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
+use App\Http\Dto\Response\AbstractDto;
 use App\Http\Dto\Response\Security\ConfirmationCodeDto;
 use App\Http\Dto\Response\Security\ResetPasswordCodeDto;
 use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
@@ -29,7 +30,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      * @throws ServiceException
      * @throws InvalidIncomeTypeException
      */
-    public function createConfirmationCode($user, $scope = 'confirm'): \App\Http\Dto\Response\AbstractDto
+    public function createConfirmationCode($user, $scope = 'confirm'): AbstractDto
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
@@ -59,7 +60,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
     /**
      * @throws ServiceException|InvalidIncomeTypeException
      */
-    public function refreshCode($user, $scope = 'confirm')
+    public function refreshCode($user, $scope = 'confirm'): AbstractDto
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);

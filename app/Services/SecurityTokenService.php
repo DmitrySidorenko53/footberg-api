@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Helpers\StringGenerator;
 use App\Http\Dto\Requests\Security\SecurityRefreshTokenDto;
+use App\Http\Dto\Response\AbstractDto;
 use App\Http\Dto\Response\Security\GeneratedTokenDto;
 use App\Interfaces\DtoInterface;
 use App\Interfaces\Repository\SecurityTokenRepositoryInterface;
@@ -28,7 +29,7 @@ class SecurityTokenService implements SecurityTokenServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function generateToken($user)
+    public function generateToken($user): AbstractDto
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
@@ -52,7 +53,7 @@ class SecurityTokenService implements SecurityTokenServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function refresh(DtoInterface $dto)
+    public function refresh(DtoInterface $dto): AbstractDto
     {
         if (!$dto instanceof SecurityRefreshTokenDto) {
             throw new InvalidIncomeTypeException(__METHOD__, SecurityRefreshTokenDto::class);

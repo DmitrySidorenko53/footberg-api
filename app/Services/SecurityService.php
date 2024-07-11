@@ -12,6 +12,7 @@ use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityLoginDto;
 use App\Http\Dto\Requests\Security\SecurityRefreshCodeDto;
 use App\Http\Dto\Requests\Security\SecurityRegisterDto;
+use App\Http\Dto\Response\AbstractDto;
 use App\Interfaces\DtoInterface;
 use App\Interfaces\Repository\RoleUserRepositoryInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
@@ -49,7 +50,7 @@ class SecurityService implements SecurityServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function register(DtoInterface $dto)
+    public function register(DtoInterface $dto): AbstractDto
     {
         if (!$dto instanceof SecurityRegisterDto) {
             throw new InvalidIncomeTypeException(__METHOD__, SecurityRegisterDto::class);
@@ -77,7 +78,7 @@ class SecurityService implements SecurityServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function login(DtoInterface $dto)
+    public function login(DtoInterface $dto): AbstractDto
     {
         if (!$dto instanceof SecurityLoginDto) {
             throw new InvalidIncomeTypeException(__METHOD__, SecurityLoginDto::class);
@@ -103,7 +104,7 @@ class SecurityService implements SecurityServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function refreshCode(DtoInterface $dto)
+    public function refreshCode(DtoInterface $dto): AbstractDto
     {
         if (!$dto instanceof SecurityRefreshCodeDto) {
             throw new InvalidIncomeTypeException(__METHOD__, SecurityRefreshCodeDto::class);
@@ -126,7 +127,7 @@ class SecurityService implements SecurityServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function confirmAccount(DtoInterface $dto)
+    public function confirmAccount(DtoInterface $dto): AbstractDto
     {
         if (!$dto instanceof SecurityCodeDto) {
             throw new InvalidIncomeTypeException(__METHOD__, SecurityCodeDto::class);

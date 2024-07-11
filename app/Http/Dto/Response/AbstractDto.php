@@ -14,10 +14,7 @@ abstract class AbstractDto
      */
     public function __construct($class, $model)
     {
-        if (!$model) {
-            return;
-        }
-        if (!$model instanceof $class) {
+        if (!$model || !$model instanceof $class) {
             throw new InvalidIncomeTypeException(__METHOD__, $class);
         }
         $this->model = $model;
