@@ -2,12 +2,13 @@
 
 namespace App\Interfaces\Service;
 
+use App\Http\Dto\Response\AbstractDto;
 use App\Interfaces\DtoInterface;
 
 interface SecurityServiceInterface
 {
-    public function register(DtoInterface $dto);
-    public function login(DtoInterface $dto);
-    public function refreshCode(DtoInterface $dto);
-    public function confirmAccount(DtoInterface $dto);
+    public function register(DtoInterface $dto): AbstractDto;
+    public function login(DtoInterface $dto): AbstractDto;
+    public function refreshCode(DtoInterface $dto): AbstractDto;
+    public function confirmAccount(DtoInterface $dto): AbstractDto;
 }

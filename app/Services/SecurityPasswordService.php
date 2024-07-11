@@ -8,6 +8,7 @@ use App\Helpers\EmailContentHelper;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityForgotPasswordDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
+use App\Http\Dto\Response\AbstractDto;
 use App\Interfaces\DtoInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
@@ -48,7 +49,7 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
      * @throws InvalidIncomeTypeException
      */
     //todo not more than five times in a day
-    public function forgotPassword(DtoInterface $dto)
+    public function forgotPassword(DtoInterface $dto): AbstractDto
     {
         if (!$dto instanceof SecurityForgotPasswordDto) {
             throw new InvalidIncomeTypeException(__METHOD__, SecurityForgotPasswordDto::class);
@@ -101,7 +102,7 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function recoveryPassword(DtoInterface $dto)
+    public function recoveryPassword(DtoInterface $dto): AbstractDto
     {
         if (!$dto instanceof SecurityPasswordRecoveryDto) {
             throw new InvalidIncomeTypeException(__METHOD__, SecurityPasswordRecoveryDto::class);
