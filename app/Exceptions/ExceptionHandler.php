@@ -22,11 +22,12 @@ final class ExceptionHandler
                 //'trace' => $throwable->getTrace(),
             ];
 
+
             if ($throwable instanceof ValidationException) {
                 return new ApiFailResponse([$throwable->errors()], 422);
             }
 
-            if ($throwable instanceof InvalidArgumentException || $throwable instanceof InvalidIncomeTypeException) {
+            if ($throwable instanceof InvalidArgumentException) {
                 return new ApiFailResponse($data, 400);
             }
 

@@ -2,9 +2,9 @@
 
 namespace App\Exceptions;
 
-use Exception;
+use InvalidArgumentException;
 
-class InvalidIncomeTypeException extends Exception
+class InvalidIncomeTypeException extends InvalidArgumentException
 {
     public function __construct($scope, $shouldReceive)
     {

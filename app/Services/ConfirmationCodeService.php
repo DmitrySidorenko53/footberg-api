@@ -72,7 +72,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
         }
 
-        $countOfSendCodeForToday = $this->countSentCodesForToday($user);
+        $countOfSendCodeForToday = $this->countSentCodesForToday($user, $scope);
 
         if ($countOfSendCodeForToday > 3) {
             throw new TooManyRequestsException(__('code.too_many_attempts'));
@@ -161,8 +161,13 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         );
     }
 
-    private function countSentCodesForToday($user): int
+    private function countSentCodesForToday($user, $scope): int
     {
-       return 0;
+
+        return $this->confirmationCodeRepository->countWithFilters([
+            //where user_id = $user->user_id
+            //where created_at [today 00:00:00 and today 23:59:59]
+            //where type = $scope
+        ]);
     }
 }

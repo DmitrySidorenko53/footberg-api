@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\InvalidIncomeTypeException;
 use Illuminate\Database\Eloquent\Builder;
 
 abstract class BaseRepository
@@ -51,13 +52,18 @@ abstract class BaseRepository
         return $this->model::query()->whereIn($field, $values)->update($data);
     }
 
-    public function findWithFilters(array $filters)
+    public function findWithFilters(array $filters, $relations = null)
     {
         $builder = $this->model::query();
-        foreach ($filters as $field => $value) {
-            $builder->where($field, $value);
+
+        if (!$filters) {
+            return $this->findWithRelations($relations);
         }
-        return $builder;
+
+        foreach ($filters as $filter) {
+            $this->addFilter($builder, $filter);
+        }
+        return $this->relations($builder, $relations);
     }
 
     public function findById(int $id, $relations = null)
@@ -72,11 +78,22 @@ abstract class BaseRepository
         return $this->relations($builder, $relations)->where($field, $value);
     }
 
-    public function findWithRelations($relations, int $limit = 0, int $offset = 0)
+    public function findWithRelations($relations, int $limit = null, int $offset = null)
     {
         $builder = $this->model::query();
-        return $this->relations($builder, $relations)->take($limit)->skip($offset);
+        $builder =  $this->relations($builder, $relations);
+
+        if ($limit) {
+            $builder->take($limit);
+        }
+
+        if ($offset) {
+            $builder->skip($offset);
+        }
+
+        return $builder;
     }
+
 
     public function countBy($field, $value, $relations = null): int
     {
@@ -104,35 +121,28 @@ abstract class BaseRepository
         return $this->model::query()->whereIn($field, $values)->delete();
     }
 
-    public function deleteWithFilters(array $filters)
+    public function deleteWithFilters(array $filters, $relations = null)
     {
-        $builder = $this->model::query();
-        foreach ($filters as $field => $value) {
-            $builder->where($field, $value);
-        }
+        $builder = $this->findWithFilters($filters, $relations);
         return $builder->delete();
     }
 
-    private function relations($builder, $relations)
+    public function countWithFilters($filters)
+    {
+        return $this->findWithFilters($filters)->count();
+    }
+
+    private function relations($builder, array|string $relations)
     {
         if (!$relations) {
             return $builder;
         }
 
-        if (is_string($relations)) {
-            $builder->with($relations);
-            return $builder;
-        }
-
-        foreach ($relations as $relation) {
-            $builder->with($relation);
-        }
-
-        return $builder;
+        return $builder->with($relations);
     }
 
-    public function filter($builder, array $filters)
+    private function addFilter(\Illuminate\Database\Query\Builder $builder, $filter)
     {
-
+        //todo implement
     }
 }

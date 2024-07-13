@@ -13,4 +13,5 @@ return [
     'too_many_roles' => 'User can not have more than 2 roles.',
     'too_many_educations' => 'User can not have more than 6 educations.',
     'invalid_array_format' => 'Array should have next entries: :keys.',
+    'in_array' => 'Income argument must be element of an array: :array.'
 ];
