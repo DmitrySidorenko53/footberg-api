@@ -48,7 +48,6 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    //todo not more than five times in a day
     public function forgotPassword(DtoInterface $dto): AbstractDto
     {
         if (!$dto instanceof SecurityForgotPasswordDto) {
@@ -75,7 +74,7 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
     /**
      * @throws InvalidIncomeTypeException
      */
-    public function resetPassword(DtoInterface $dto)
+    public function resetPassword(DtoInterface $dto): void
     {
         if (!$dto instanceof SecurityCodeDto) {
             throw new InvalidIncomeTypeException(__METHOD__, SecurityCodeDto::class);
@@ -114,9 +113,13 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
             throw new InvalidArgumentException(__('exceptions.active_on_recover'));
         }
 
+        if (Hash::check($dto->password, $user->password)) {
+            throw new InvalidArgumentException(__('exceptions.duplicate_password'));
+        }
+
         $user->password = Hash::make($dto->password, ['rounds' => 12]);
         $user->is_active = true;
-        $user->last_login_at = Carbon::now()->format('Y-m-d H:i:s');
+        $user->last_login_at = now()->format('Y-m-d H:i:s');
 
 
         $this->userRepository->save($user);

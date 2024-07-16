@@ -58,7 +58,7 @@ class SecurityService implements SecurityServiceInterface
         $user = new User();
         $user->email = $dto->email;
         $user->password = Hash::make($dto->password, ['rounds' => 12]);
-        $user->register_at = Carbon::now()->format('Y-m-d H:i:s');
+        $user->register_at = now()->format('Y-m-d H:i:s');
 
         $code = DB::transaction(function () use ($user) {
             $isSuccess = $this->userRepository->save($user);
@@ -95,7 +95,7 @@ class SecurityService implements SecurityServiceInterface
             throw new InvalidArgumentException(__('exceptions.incorrect_password'));
         }
 
-        $user->last_login_at = Carbon::now()->format('Y-m-d H:i:s');
+        $user->last_login_at = now()->format('Y-m-d H:i:s');
         $this->userRepository->save($user);
 
         return $this->securityTokenService->generateToken($user);
@@ -146,7 +146,7 @@ class SecurityService implements SecurityServiceInterface
             $this->confirmationCodeService->tryConfirmCode($code, $dto);
 
             $user->is_active = true;
-            $user->last_login_at = Carbon::now()->format('Y-m-d H:i:s');
+            $user->last_login_at = now()->format('Y-m-d H:i:s');
 
             $this->userRepository->save($user);
 

@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Helpers\Filters\AbstractFilter;
 use Illuminate\Database\Eloquent\Builder;
-use PHPUnit\Util\Filter;
 
 abstract class BaseRepository
 {
@@ -61,7 +60,9 @@ abstract class BaseRepository
             return $this->findWithRelations($builder, $relations);
         }
 
-        return $this->filters($builder, $filters)->relations($builder, $relations);
+        $builder = $this->filters($builder, $filters);
+
+        return $relations ? $relations($builder, $relations) : $builder;
     }
 
     public function findById(int $id, $relations = null)
@@ -130,18 +131,18 @@ abstract class BaseRepository
         return $builder->delete();
     }
 
-    private function relations($builder, array|string $relations)
+    private function relations($builder, $relations)
     {
-        if (!$relations) {
+        if ($relations === null) {
             return $builder;
         }
 
         return $builder->with($relations);
     }
 
-    private function filters($builder, array|Filter $filters)
+    private function filters($builder, $filters)
     {
-        if (!$filters) {
+        if ($filters === null) {
             return $builder;
         }
 

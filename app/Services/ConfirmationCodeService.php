@@ -43,8 +43,8 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 
         $confirmationCode = new ConfirmationCode();
         $confirmationCode->code_text = Hash::make($code);
-        $confirmationCode->created_at = Carbon::now()->format('Y-m-d H:i:s');
-        $confirmationCode->valid_until = Carbon::now()->addHours(2)->format('Y-m-d H:i:s');
+        $confirmationCode->created_at = now()->format('Y-m-d H:i:s');
+        $confirmationCode->valid_until = now()->addMinutes(5)->format('Y-m-d H:i:s');
         $confirmationCode->user_id = $user->user_id;
         $confirmationCode->type = $scope;
 
@@ -60,8 +60,6 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
     }
 
 
-    //todo code: 2 times in a day
-
     /**
      * @throws ServiceException|InvalidIncomeTypeException
      * @throws TooManyRequestsException
@@ -72,19 +70,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
         }
 
-        $countOfSendCodeForToday = $this->countSentCodesForToday($user, $scope);
-
-        if ($countOfSendCodeForToday > 3) {
-            throw new TooManyRequestsException(__('code.too_many_attempts'));
-        }
-
-        /** @var ConfirmationCode $lastValidCode */
-        $lastValidCode = $user->getLastValidCode($scope);
-        $whenAbleSendNewCode = Carbon::parse($lastValidCode->created_at)->addMinutes(10);
-
-        if (now()->greaterThan($whenAbleSendNewCode)) {
-            throw new TooManyRequestsException(__('code.repeat_later'));
-        }
+        $this->checkPossibilityOfSending($user, $scope);
 
         $userCodesIds = $user->codes()->where('type', $scope)->pluck('code_id')->toArray();
 
@@ -152,16 +138,23 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         if ($code && (!$code instanceof ConfirmationCode)) {
             throw new InvalidIncomeTypeException(__METHOD__, ConfirmationCode::class);
         }
+
         return $this->confirmationCodeRepository->update($code,
             [
-                'confirmed_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'confirmed_at' => now()->format('Y-m-d H:i:s'),
                 'is_confirmed' => true,
                 'is_expired' => true
             ]
         );
     }
 
-    private function countSentCodesForToday($user, $scope): int
+    /**
+     * @param $user
+     * @param $scope
+     * @return void
+     * @throws TooManyRequestsException
+     */
+    private function checkPossibilityOfSending($user, $scope): void
     {
         $filters = [
             new DefaultFilter('user_id', $user->user_id),
@@ -169,7 +162,28 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
             new DefaultFilter('type', $scope)
         ];
 
-        return $this->confirmationCodeRepository->countWithFilters($filters);
+        $countOfSentCodeForToday = $this->confirmationCodeRepository->countWithFilters($filters);
+
+        if ($countOfSentCodeForToday == 0) {
+            return;
+        }
+
+        if ($countOfSentCodeForToday >= 3) {
+            throw new TooManyRequestsException(__('code.too_many_attempts'));
+        }
+
+        /** @var ConfirmationCode $lastValidCode */
+        $lastValidCode = $user->getLastValidCode($scope);
+
+        if (!$lastValidCode) {
+            return;
+        }
+
+        $whenAbleSendNewCode = Carbon::parse($lastValidCode->created_at)->addMinutes(2);
+
+        if ($whenAbleSendNewCode->greaterThan(now())) {
+            throw new TooManyRequestsException(__('code.repeat_later'));
+        }
     }
 
     private function getCurrentDayStartAndEnd(string $format = 'Y-m-d H:i:s'): array

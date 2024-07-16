@@ -56,7 +56,7 @@ class TokenMiddleware
 
         $candidate = $token->user;
 
-        if (!$candidate) {
+        if (!$candidate || !$candidate->is_active) {
             return new ApiFailResponse([], 401, __('token.no_user'));
         }
 

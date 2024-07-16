@@ -40,8 +40,8 @@ class SecurityTokenService implements SecurityTokenServiceInterface
         //todo save encrypted token
         $token = new SecurityToken();
         $token->token = StringGenerator::generateSecurityToken(255);
-        $token->created_at = Carbon::now()->format('Y-m-d H:i:s');
-        $token->valid_until = Carbon::now()->addHours(8)->format('Y-m-d H:i:s');
+        $token->created_at = now()->format('Y-m-d H:i:s');
+        $token->valid_until = now()->addHours(8)->format('Y-m-d H:i:s');
         $token->is_valid = true;
         $token->user_id = $user->user_id;
 
@@ -80,7 +80,7 @@ class SecurityTokenService implements SecurityTokenServiceInterface
         $this->securityTokenRepository->updateWhereIn('token', $tokens, [
             'is_valid' => false,
             'is_deleted' => true,
-            'deleted_at' => Carbon::now()->format('Y-m-d H:i:s')
+            'deleted_at' => now()->format('Y-m-d H:i:s')
         ]);
     }
 
