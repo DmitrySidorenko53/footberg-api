@@ -13,15 +13,6 @@ enum OperatorsEnum: string
     case LIKE = 'like';
     case NOT_LIKE = 'not like';
 
-    public static function keys($cases, $asString = true): array|string
-    {
-        $keys = [];
-        foreach ($cases as $case) {
-            $keys[] = $case->value;
-        }
-        return $asString ? implode('|', $keys) : $keys;
-    }
-
     public static function likeOperators(): array
     {
         return [

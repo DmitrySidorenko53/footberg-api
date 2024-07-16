@@ -21,14 +21,6 @@ enum WhereClausesEnum: string
     case WHERE_NOT_BETWEEN_COLUMNS = 'whereNotBetweenColumns';
     case WHERE_FULL_TEXT = 'whereFullText';
 
-    public static function keys($cases, $asString = true): array|string
-    {
-        $keys = [];
-        foreach ($cases as $case) {
-            $keys[] = $case->value;
-        }
-        return $asString ? implode('|', $keys) : $keys;
-    }
 
     public static function requireArrayAsValueCases(): array
     {

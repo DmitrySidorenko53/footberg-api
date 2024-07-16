@@ -2,8 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Exceptions\InvalidIncomeTypeException;
+use App\Helpers\Filters\AbstractFilter;
 use Illuminate\Database\Eloquent\Builder;
+use PHPUnit\Util\Filter;
 
 abstract class BaseRepository
 {
@@ -52,18 +53,15 @@ abstract class BaseRepository
         return $this->model::query()->whereIn($field, $values)->update($data);
     }
 
-    public function findWithFilters(array $filters, $relations = null)
+    public function findWithFilters(array|AbstractFilter $filters, $relations = null)
     {
         $builder = $this->model::query();
 
         if (!$filters) {
-            return $this->findWithRelations($relations);
+            return $this->findWithRelations($builder, $relations);
         }
 
-        foreach ($filters as $filter) {
-            $this->addFilter($builder, $filter);
-        }
-        return $this->relations($builder, $relations);
+        return $this->filters($builder, $filters)->relations($builder, $relations);
     }
 
     public function findById(int $id, $relations = null)
@@ -78,10 +76,11 @@ abstract class BaseRepository
         return $this->relations($builder, $relations)->where($field, $value);
     }
 
-    public function findWithRelations($relations, int $limit = null, int $offset = null)
+    public function findWithRelations($relations, $builderInstance = null, int $limit = null, int $offset = null)
     {
-        $builder = $this->model::query();
-        $builder =  $this->relations($builder, $relations);
+        $builder = $builderInstance ?? $this->model::query();
+
+        $builder = $this->relations($builder, $relations);
 
         if ($limit) {
             $builder->take($limit);
@@ -94,6 +93,10 @@ abstract class BaseRepository
         return $builder;
     }
 
+    public function countWithFilters($filters)
+    {
+        return $this->findWithFilters($filters)->count();
+    }
 
     public function countBy($field, $value, $relations = null): int
     {
@@ -127,11 +130,6 @@ abstract class BaseRepository
         return $builder->delete();
     }
 
-    public function countWithFilters($filters)
-    {
-        return $this->findWithFilters($filters)->count();
-    }
-
     private function relations($builder, array|string $relations)
     {
         if (!$relations) {
@@ -141,8 +139,30 @@ abstract class BaseRepository
         return $builder->with($relations);
     }
 
-    private function addFilter(\Illuminate\Database\Query\Builder $builder, $filter)
+    private function filters($builder, array|Filter $filters)
     {
-        //todo implement
+        if (!$filters) {
+            return $builder;
+        }
+
+        if (!is_array($filters)) {
+            $this->addFilter($builder, $filters);
+            return $builder;
+        }
+
+        foreach ($filters as $filter) {
+            $this->addFilter($builder, $filter);
+        }
+
+        return $builder;
+    }
+
+    private function addFilter($builder, $filter): void
+    {
+        if (!$filter instanceof AbstractFilter) {
+            return;
+        }
+
+        $filter->addFilter($builder);
     }
 }
