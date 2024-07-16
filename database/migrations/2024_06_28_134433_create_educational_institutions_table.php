@@ -1,12 +1,14 @@
 <?php
 
 use App\Enums\EducationDegreeEnum;
+use App\Traits\EnumKeysTrait;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    use EnumKeysTrait;
     /**
      * Run the migrations.
      */
@@ -15,7 +17,7 @@ return new class extends Migration
         Schema::create('educational_institutions', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->enum('degree', [EducationDegreeEnum::keys()]);
+            $table->enum('degree', $this->keys(EducationDegreeEnum::cases(), true));
 
             $table->foreign('degree')->references('degree')->on('educational_degrees');
         });

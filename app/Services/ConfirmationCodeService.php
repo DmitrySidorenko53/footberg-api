@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
 use App\Exceptions\TooManyRequestsException;
+use App\Helpers\Filters\BetweenFilter;
+use App\Helpers\Filters\DefaultFilter;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Response\Security\ConfirmationCodeDto;
 use App\Http\Dto\Response\Security\ResetPasswordCodeDto;
@@ -163,11 +165,20 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 
     private function countSentCodesForToday($user, $scope): int
     {
+        $filters = [
+            new DefaultFilter('user_id', $user->user_id),
+            new BetweenFilter('created_at', $this->getCurrentDayStartAndEnd()),
+            new DefaultFilter('type', $scope)
+        ];
 
-        return $this->confirmationCodeRepository->countWithFilters([
-            //where user_id = $user->user_id
-            //where created_at [today 00:00:00 and today 23:59:59]
-            //where type = $scope
-        ]);
+        return $this->confirmationCodeRepository->countWithFilters($filters);
+    }
+
+    private function getCurrentDayStartAndEnd(string $format = 'Y-m-d H:i:s'): array
+    {
+        return [
+            Carbon::now()->startOfDay()->format($format),
+            Carbon::now()->endOfDay()->format($format)
+        ];
     }
 }

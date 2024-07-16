@@ -9,7 +9,6 @@ enum StatusCodeEnum: string
     case HTTP_ACCEPTED = 'accepted';
     case HTTP_NO_CONTENT = 'no_content';
 
-
     case HTTP_BAD_REQUEST = 'bad_request';
     case HTTP_UNAUTHORIZED = 'unauthorized';
     case HTTP_FORBIDDEN = 'forbidden';
