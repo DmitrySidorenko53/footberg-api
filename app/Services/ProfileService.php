@@ -13,7 +13,10 @@ use App\Interfaces\Service\EducationServiceInterface;
 use App\Interfaces\Service\ProfileServiceInterface;
 use App\Interfaces\Service\RoleServiceInterface;
 use App\Models\AccountDetails;
+use App\Models\SupportedLocale;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class ProfileService implements ProfileServiceInterface
 {
@@ -86,5 +89,22 @@ class ProfileService implements ProfileServiceInterface
         ]);
 
         return ProfileShowDto::create($user, ['is_my' => $isMy]);
+    }
+
+    public function changeLanguage($user, $wantedLanguage)
+    {
+        if (!$user instanceof User) {
+            throw new InvalidIncomeTypeException(__METHOD__, User::class);
+        }
+
+        $supportedLocales = SupportedLocale::all()->pluck('locale')->toArray();
+
+        if (!in_array($wantedLanguage, $supportedLocales)) {
+            throw new InvalidArgumentException(__('exceptions.unsupported_locale'));
+        }
+
+        $this->userRepository->update($user, [
+            'locale' => $wantedLanguage
+        ]);
     }
 }

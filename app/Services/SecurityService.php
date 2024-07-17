@@ -22,7 +22,6 @@ use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Jobs\SendEmailJob;
 use App\Models\RoleUser;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
@@ -90,6 +89,8 @@ class SecurityService implements SecurityServiceInterface
         if (!$user->isActiveOrNotDeleted()) {
             throw new NotFoundHttpException(__('exceptions.inactive'));
         }
+
+        //todo not more than 10 attempts by day
 
         if (!Hash::check($dto->password, $user->password)) {
             throw new InvalidArgumentException(__('exceptions.incorrect_password'));

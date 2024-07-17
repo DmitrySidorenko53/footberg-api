@@ -40,9 +40,10 @@ class TokenMiddleware
 
         //todo search if token in db encrypted
         /** @var SecurityToken $token */
-        $token = SecurityToken::query()->where('token', $tokenCandidate)
-            ->where('is_valid', true)
-            ->where('is_deleted', false)
+        $token = SecurityToken::query()
+            ->where('token', $tokenCandidate)
+            ->where('is_valid', '=', true)
+            ->where('is_deleted', '=', false)
             ->with('user.roles')
             ->first();
 

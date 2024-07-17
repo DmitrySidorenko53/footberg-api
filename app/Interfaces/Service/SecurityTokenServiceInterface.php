@@ -10,4 +10,6 @@ interface SecurityTokenServiceInterface
     public function generateToken($user): AbstractDto;
 
     public function refresh(DtoInterface $dto): AbstractDto;
+
+    public function resetTokens($user);
 }

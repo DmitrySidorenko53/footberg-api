@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\EmailScopeEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Helpers\EmailContentHelper;
+use App\Http\Dto\Requests\Profile\ChangePasswordDto;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityForgotPasswordDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
@@ -16,7 +17,7 @@ use App\Interfaces\Service\SecurityPasswordServiceInterface;
 use App\Interfaces\Service\SecurityTokenServiceInterface;
 use App\Jobs\SendEmailJob;
 use App\Models\User;
-use Carbon\Carbon;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
@@ -122,6 +123,31 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
         $user->last_login_at = now()->format('Y-m-d H:i:s');
 
 
+        $this->userRepository->save($user);
+
+        return $this->securityTokenService->generateToken($user);
+    }
+
+    public function changePassword(DtoInterface $dto, Authenticatable $user): AbstractDto
+    {
+        if (!$dto instanceof ChangePasswordDto) {
+            throw new InvalidIncomeTypeException(__METHOD__, ChangePasswordDto::class);
+        }
+
+        if (!$user instanceof User) {
+            throw new InvalidIncomeTypeException(__METHOD__, User::class);
+        }
+
+        if (!Hash::check($dto->currentPassword, $user->password)) {
+            throw new InvalidArgumentException(__('exceptions.incorrect_password'));
+        }
+
+        if (Hash::check($dto->newPassword, $user->password)) {
+            throw new InvalidArgumentException(__('exceptions.duplicate_password'));
+        }
+
+        $user->password = Hash::make($dto->newPassword, ['rounds' => 12]);
+        $user->last_login_at = now()->format('Y-m-d H:i:s');
         $this->userRepository->save($user);
 
         return $this->securityTokenService->generateToken($user);

@@ -37,6 +37,12 @@ Route::group(
             ],
             function () {
                 Route::post('/fill', [ProfileController::class, 'fill']);
+                Route::post('/logout', [ProfileController::class, 'logout']);
+
+                Route::post('/password/change', [ProfileController::class, 'changePassword']);
+
+                Route::put('/language/change/{lang}', [ProfileController::class, 'changeLanguage']);
+
                 Route::get('/show/{id?}', [ProfileController::class, 'show']);
             }
         );

@@ -15,6 +15,7 @@ use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
 use App\Models\ConfirmationCode;
 use App\Models\User;
+use App\Traits\CurrentDayTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
@@ -22,6 +23,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 {
+    use CurrentDayTrait;
+
     private ConfirmationCodeRepositoryInterface $confirmationCodeRepository;
 
     public function __construct(ConfirmationCodeRepositoryInterface $confirmationCodeRepository)
@@ -158,7 +161,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
     {
         $filters = [
             new DefaultFilter('user_id', $user->user_id),
-            new BetweenFilter('created_at', $this->getCurrentDayStartAndEnd()),
+            new BetweenFilter('created_at', $this->getDayStartAndEnd(now())),
             new DefaultFilter('type', $scope)
         ];
 
@@ -184,13 +187,5 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         if ($whenAbleSendNewCode->greaterThan(now())) {
             throw new TooManyRequestsException(__('code.repeat_later'));
         }
-    }
-
-    private function getCurrentDayStartAndEnd(string $format = 'Y-m-d H:i:s'): array
-    {
-        return [
-            Carbon::now()->startOfDay()->format($format),
-            Carbon::now()->endOfDay()->format($format)
-        ];
     }
 }

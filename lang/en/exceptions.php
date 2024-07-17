@@ -15,5 +15,5 @@ return [
     'invalid_array_format' => 'Array should have next entries: :keys.',
     'in_array' => 'Income argument must be element of an array: :array.',
     'array_size' => 'Income array argument must have :size items.',
-    'duplicate_password' => 'New password must be from the current one.'
+    'duplicate_password' => 'New password must be different from the current one.'
 ];

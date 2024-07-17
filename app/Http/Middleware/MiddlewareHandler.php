@@ -6,7 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 
 final class MiddlewareHandler
 {
-    protected array $aliases = [
+    private array $aliases = [
         'token' => TokenMiddleware::class,
     ];
 

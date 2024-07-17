@@ -4,6 +4,7 @@ namespace App\Interfaces\Service;
 
 use App\Http\Dto\Response\AbstractDto;
 use App\Interfaces\DtoInterface;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 interface SecurityPasswordServiceInterface
 {
@@ -12,4 +13,6 @@ interface SecurityPasswordServiceInterface
     public function resetPassword(DtoInterface $dto);
 
     public function recoveryPassword(DtoInterface $dto): AbstractDto;
+
+    public function changePassword(DtoInterface $dto, Authenticatable $user): AbstractDto;
 }

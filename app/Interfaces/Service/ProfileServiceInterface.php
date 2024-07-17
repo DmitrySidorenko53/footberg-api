@@ -10,4 +10,6 @@ interface ProfileServiceInterface
     public function fillDetails(DtoInterface $dto, $user): AbstractDto;
 
     public function getDetailsByUserId($userId, $isMy): AbstractDto;
+
+    public function changeLanguage($user, $wantedLanguage);
 }

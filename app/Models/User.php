@@ -16,6 +16,7 @@ use Illuminate\Notifications\Notifiable;
  * @property int $user_id
  * @property string $email
  * @property string $password
+ * @property string $locale
  * @property Carbon $register_at
  * @property Carbon $deleted_at
  * @property Carbon $last_login_at
@@ -40,7 +41,8 @@ class User extends Authenticatable
         'register_at',
         'deleted_at',
         'last_login_at',
-        'is_active'
+        'is_active',
+        'locale'
     ];
 
     public $timestamps = false;
@@ -79,6 +81,11 @@ class User extends Authenticatable
         return $this->belongsToMany(EducationalInstitution::class, 'user_education', 'user_id', 'education_id')
             ->using(UserEducation::class)
             ->withPivot('start_date', 'end_date');
+    }
+
+    public function defaultLocale(): HasOne
+    {
+        return $this->hasOne(SupportedLocale::class, 'locale');
     }
 
     public function getLastValidCode($type = 'confirm'): object|null

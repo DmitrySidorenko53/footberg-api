@@ -44,6 +44,6 @@ class ProfileShowDto extends AbstractDto
                 ->setProperty('is_active', $this->model->is_active)
                 ->setDateTime('deleted_at', $this->model->deleted_at);
         }
-        return $dto;
+        return $dto->setProperty('default_locale', $this->model->locale);
     }
 }
