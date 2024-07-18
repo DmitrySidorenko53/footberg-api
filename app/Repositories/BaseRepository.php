@@ -52,6 +52,16 @@ abstract class BaseRepository
         return $this->model::query()->whereIn($field, $values)->update($data);
     }
 
+    public function get($columns = ['*'])
+    {
+        return $this->model::query()->get($columns);
+    }
+
+    public function pluck($columns = ['*'])
+    {
+        return $this->get()->pluck($columns)->toArray();
+    }
+
     public function findWithFilters(array|AbstractFilter $filters, $relations = null)
     {
         $builder = $this->model::query();

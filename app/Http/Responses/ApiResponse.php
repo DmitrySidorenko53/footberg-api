@@ -68,6 +68,11 @@ abstract class ApiResponse extends JsonResponse
         $applicationName = str_replace('-', '_', $applicationName);
 
         $path = request()->getPathInfo();
+
+        if (str_contains($path, '?')) {
+            $path = substr($path, 0, strpos($path, '?'));
+        }
+
         $path = str_replace('/', '_', $path);
         $path = substr($path, 4);
 

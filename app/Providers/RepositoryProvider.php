@@ -6,6 +6,7 @@ use App\Interfaces\Repository\AccountDetailsRepositoryInterface;
 use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
 use App\Interfaces\Repository\EducationalDegreeRepositoryInterface;
 use App\Interfaces\Repository\EducationalInstitutionRepositoryInterface;
+use App\Interfaces\Repository\LocaleRepositoryInterface;
 use App\Interfaces\Repository\RoleUserRepositoryInterface;
 use App\Interfaces\Repository\SecurityTokenRepositoryInterface;
 use App\Interfaces\Repository\UserEducationRepositoryInterface;
@@ -14,6 +15,7 @@ use App\Repositories\AccountDetailsRepository;
 use App\Repositories\ConfirmationCodeRepository;
 use App\Repositories\EducationalDegreeRepository;
 use App\Repositories\EducationalInstitutionRepository;
+use App\Repositories\LocaleRepository;
 use App\Repositories\RoleUserRepository;
 use App\Repositories\SecurityTokenRepository;
 use App\Repositories\UserEducationRepository;
@@ -47,5 +49,6 @@ class RepositoryProvider extends ServiceProvider
         EducationalInstitutionRepositoryInterface::class => EducationalInstitutionRepository::class,
         AccountDetailsRepositoryInterface::class => AccountDetailsRepository::class,
         UserEducationRepositoryInterface::class => UserEducationRepository::class,
+        LocaleRepositoryInterface::class => LocaleRepository::class,
     ];
 }

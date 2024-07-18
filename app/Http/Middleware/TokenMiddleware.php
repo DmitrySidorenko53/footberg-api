@@ -63,6 +63,8 @@ class TokenMiddleware
 
         Auth::setUser($candidate);
 
-        return $next($request);
+        app()->setLocale($candidate->locale);
+
+        return $next($request, );
     }
 }

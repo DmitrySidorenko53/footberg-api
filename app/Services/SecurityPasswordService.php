@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Enums\EmailScopeEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Helpers\EmailContentHelper;
-use App\Http\Dto\Requests\Profile\ChangePasswordDto;
+use App\Http\Dto\Requests\Security\SecurityChangePasswordDto;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityForgotPasswordDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
@@ -130,8 +130,8 @@ class SecurityPasswordService implements SecurityPasswordServiceInterface
 
     public function changePassword(DtoInterface $dto, Authenticatable $user): AbstractDto
     {
-        if (!$dto instanceof ChangePasswordDto) {
-            throw new InvalidIncomeTypeException(__METHOD__, ChangePasswordDto::class);
+        if (!$dto instanceof SecurityChangePasswordDto) {
+            throw new InvalidIncomeTypeException(__METHOD__, SecurityChangePasswordDto::class);
         }
 
         if (!$user instanceof User) {

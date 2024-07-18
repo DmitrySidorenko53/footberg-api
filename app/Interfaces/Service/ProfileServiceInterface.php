@@ -11,5 +11,5 @@ interface ProfileServiceInterface
 
     public function getDetailsByUserId($userId, $isMy): AbstractDto;
 
-    public function changeLanguage($user, $wantedLanguage);
+    public function changeLanguage($user, $wantedLanguage): void;
 }

@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ProfileController;
-use App\Http\Controllers\Api\V1\SecurityController;
+use App\Http\Controllers\Api\V1\Security\SecurityController;
+use App\Http\Controllers\Api\V1\Security\SecurityPasswordController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -24,9 +25,16 @@ Route::group(
 
                 Route::post('/token/refresh', [SecurityController::class, 'refreshToken']);
 
-                Route::post('/password/forgot', [SecurityController::class, 'forgotPassword']);
-                Route::post('/password/reset', [SecurityController::class, 'resetPassword']);
-                Route::post('/password/recovery', [SecurityController::class, 'recoveryPassword']);
+                Route::group(
+                    [
+                        'prefix' => 'password'
+                    ],
+                    function () {
+                        Route::post('/change', [SecurityPasswordController::class, 'changePassword'])->middleware('token');
+                        Route::post('/forgot', [SecurityPasswordController::class, 'forgotPassword']);
+                        Route::post('/reset', [SecurityPasswordController::class, 'resetPassword']);
+                        Route::post('/recovery', [SecurityPasswordController::class, 'recoveryPassword']);
+                    });
             }
         );
 
@@ -39,12 +47,11 @@ Route::group(
                 Route::post('/fill', [ProfileController::class, 'fill']);
                 Route::post('/logout', [ProfileController::class, 'logout']);
 
-                Route::post('/password/change', [ProfileController::class, 'changePassword']);
-
                 Route::put('/language/change/{lang}', [ProfileController::class, 'changeLanguage']);
 
                 Route::get('/show/{id?}', [ProfileController::class, 'show']);
             }
         );
-    });
+    }
+);
 

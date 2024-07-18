@@ -8,12 +8,12 @@ use App\Http\Dto\Response\AbstractDto;
 use App\Http\Dto\Response\Profile\ProfileShowDto;
 use App\Interfaces\DtoInterface;
 use App\Interfaces\Repository\AccountDetailsRepositoryInterface;
+use App\Interfaces\Repository\LocaleRepositoryInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\EducationServiceInterface;
 use App\Interfaces\Service\ProfileServiceInterface;
 use App\Interfaces\Service\RoleServiceInterface;
 use App\Models\AccountDetails;
-use App\Models\SupportedLocale;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -24,18 +24,21 @@ class ProfileService implements ProfileServiceInterface
     private UserRepositoryInterface $userRepository;
     private RoleServiceInterface $roleService;
     private EducationServiceInterface $educationService;
+    private LocaleRepositoryInterface $localeRepository;
 
     public function __construct(
         AccountDetailsRepositoryInterface $accountDetailsRepository,
         RoleServiceInterface              $roleService,
         EducationServiceInterface         $educationService,
         UserRepositoryInterface           $userRepository,
+        LocaleRepositoryInterface         $localeRepository,
     )
     {
         $this->accountDetailsRepository = $accountDetailsRepository;
         $this->roleService = $roleService;
         $this->educationService = $educationService;
         $this->userRepository = $userRepository;
+        $this->localeRepository = $localeRepository;
     }
 
     /**
@@ -91,13 +94,13 @@ class ProfileService implements ProfileServiceInterface
         return ProfileShowDto::create($user, ['is_my' => $isMy]);
     }
 
-    public function changeLanguage($user, $wantedLanguage)
+    public function changeLanguage($user, $wantedLanguage): void
     {
         if (!$user instanceof User) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
         }
 
-        $supportedLocales = SupportedLocale::all()->pluck('locale')->toArray();
+        $supportedLocales = $this->localeRepository->pluck('locale');
 
         if (!in_array($wantedLanguage, $supportedLocales)) {
             throw new InvalidArgumentException(__('exceptions.unsupported_locale'));
