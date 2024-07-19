@@ -3,8 +3,9 @@
 namespace App\Helpers\Filters;
 
 use App\Enums\Filters\WhereClausesEnum;
+use App\Interfaces\FilterInterface;
 
-class InArrayFilter extends AbstractFilter
+class InArrayFilter extends AbstractFilter implements FilterInterface
 {
     private array $values;
 

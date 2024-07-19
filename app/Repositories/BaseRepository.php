@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Helpers\Filters\AbstractFilter;
+use App\Interfaces\FilterInterface;
 use Illuminate\Database\Eloquent\Builder;
 
 abstract class BaseRepository
@@ -62,7 +62,7 @@ abstract class BaseRepository
         return $this->get()->pluck($columns)->toArray();
     }
 
-    public function findWithFilters(array|AbstractFilter $filters, $relations = null)
+    public function findWithFilters(array|FilterInterface $filters, $relations = null)
     {
         $builder = $this->model::query();
 
@@ -70,9 +70,7 @@ abstract class BaseRepository
             return $this->findWithRelations($builder, $relations);
         }
 
-        $builder = $this->filters($builder, $filters);
-
-        return $relations ? $relations($builder, $relations) : $builder;
+        return $this->filters($builder, $filters)->relations($builder, $relations);
     }
 
     public function findById(int $id, $relations = null)
@@ -141,18 +139,18 @@ abstract class BaseRepository
         return $builder->delete();
     }
 
-    private function relations($builder, $relations)
+    private function relations($builder, array|string $relations)
     {
-        if ($relations === null) {
+        if (!$relations) {
             return $builder;
         }
 
         return $builder->with($relations);
     }
 
-    private function filters($builder, $filters)
+    private function filters($builder, array|FilterInterface $filters)
     {
-        if ($filters === null) {
+        if (!$filters) {
             return $builder;
         }
 
@@ -170,7 +168,7 @@ abstract class BaseRepository
 
     private function addFilter($builder, $filter): void
     {
-        if (!$filter instanceof AbstractFilter) {
+        if (!$filter instanceof FilterInterface) {
             return;
         }
 

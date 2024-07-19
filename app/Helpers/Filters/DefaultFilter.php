@@ -4,8 +4,9 @@ namespace App\Helpers\Filters;
 
 use App\Enums\Filters\OperatorsEnum;
 use App\Enums\Filters\WhereClausesEnum;
+use App\Interfaces\FilterInterface;
 
-class DefaultFilter extends AbstractFilter
+class DefaultFilter extends AbstractFilter implements FilterInterface
 {
     private OperatorsEnum $operator;
     private string|float|int|bool $value;

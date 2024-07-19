@@ -3,9 +3,10 @@
 namespace App\Helpers\Filters;
 
 use App\Enums\Filters\WhereClausesEnum;
+use App\Interfaces\FilterInterface;
 use InvalidArgumentException;
 
-class BetweenFilter extends AbstractFilter
+class BetweenFilter extends AbstractFilter implements FilterInterface
 {
     private array $values;
 
