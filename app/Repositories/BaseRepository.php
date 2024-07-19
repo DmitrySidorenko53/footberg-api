@@ -2,9 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Helpers\Filters\AbstractFilter;
+use App\Interfaces\FilterInterface;
 use Illuminate\Database\Eloquent\Builder;
-use PHPUnit\Util\Filter;
 
 abstract class BaseRepository
 {
@@ -53,7 +52,7 @@ abstract class BaseRepository
         return $this->model::query()->whereIn($field, $values)->update($data);
     }
 
-    public function findWithFilters(array|AbstractFilter $filters, $relations = null)
+    public function findWithFilters(array|FilterInterface $filters, $relations = null)
     {
         $builder = $this->model::query();
 
@@ -139,7 +138,7 @@ abstract class BaseRepository
         return $builder->with($relations);
     }
 
-    private function filters($builder, array|Filter $filters)
+    private function filters($builder, array|FilterInterface $filters)
     {
         if (!$filters) {
             return $builder;
@@ -159,7 +158,7 @@ abstract class BaseRepository
 
     private function addFilter($builder, $filter): void
     {
-        if (!$filter instanceof AbstractFilter) {
+        if (!$filter instanceof FilterInterface) {
             return;
         }
 

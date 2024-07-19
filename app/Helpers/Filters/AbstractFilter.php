@@ -21,7 +21,4 @@ abstract class AbstractFilter
         $this->field = $field;
         $this->boolean = $boolean;
     }
-
-
-    abstract public function addFilter($builder);
 }
