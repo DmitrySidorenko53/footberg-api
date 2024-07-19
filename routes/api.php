@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ProfileController;
-use App\Http\Controllers\Api\V1\Security\SecurityController;
-use App\Http\Controllers\Api\V1\Security\SecurityPasswordController;
+use App\Http\Controllers\Api\V1\SecurityController;
+use App\Http\Controllers\Api\V1\SecurityPasswordController;
 use Illuminate\Support\Facades\Route;
 
 

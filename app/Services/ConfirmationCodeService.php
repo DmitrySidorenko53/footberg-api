@@ -17,6 +17,7 @@ use App\Models\ConfirmationCode;
 use App\Models\User;
 use App\Traits\CurrentDayTrait;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

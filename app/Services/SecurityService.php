@@ -6,7 +6,6 @@ namespace App\Services;
 use App\Enums\EmailScopeEnum;
 use App\Enums\RoleEnum;
 use App\Exceptions\InvalidIncomeTypeException;
-use App\Exceptions\ServiceException;
 use App\Helpers\EmailContentHelper;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityLoginDto;
@@ -60,11 +59,7 @@ class SecurityService implements SecurityServiceInterface
         $user->register_at = now()->format('Y-m-d H:i:s');
 
         $code = DB::transaction(function () use ($user) {
-            $isSuccess = $this->userRepository->save($user);
-
-            if (!$isSuccess) {
-                throw new ServiceException(__('exceptions.error_while_creating', ['model' => User::class]));
-            }
+            $this->userRepository->save($user);
             return $this->confirmationCodeService->createConfirmationCode($user);
         });
 

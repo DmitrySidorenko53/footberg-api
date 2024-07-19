@@ -62,7 +62,7 @@ abstract class BaseRepository
         return $this->get()->pluck($columns)->toArray();
     }
 
-    public function findWithFilters(array|FilterInterface $filters, $relations = null)
+    public function findWithFilters($filters, $relations = null)
     {
         $builder = $this->model::query();
 
@@ -70,8 +70,11 @@ abstract class BaseRepository
             return $this->findWithRelations($builder, $relations);
         }
 
-        return $this->filters($builder, $filters)->relations($builder, $relations);
+        $builder = $this->filters($builder, $filters);
+
+        return $relations ? $this->relations($builder, $relations) : $builder;
     }
+
 
     public function findById(int $id, $relations = null)
     {
@@ -139,7 +142,7 @@ abstract class BaseRepository
         return $builder->delete();
     }
 
-    private function relations($builder, array|string $relations)
+    private function relations($builder, $relations)
     {
         if (!$relations) {
             return $builder;
@@ -148,7 +151,7 @@ abstract class BaseRepository
         return $builder->with($relations);
     }
 
-    private function filters($builder, array|FilterInterface $filters)
+    private function filters($builder, $filters)
     {
         if (!$filters) {
             return $builder;
