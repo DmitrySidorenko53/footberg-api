@@ -7,6 +7,7 @@ use App\Http\Dto\Requests\Security\SecurityChangePasswordDto;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Requests\Security\SecurityForgotPasswordDto;
 use App\Http\Dto\Requests\Security\SecurityPasswordRecoveryDto;
+use App\Http\Responses\ApiResponse;
 use App\Http\Responses\ApiSuccessResponse;
 use App\Interfaces\Service\SecurityPasswordServiceInterface;
 use Illuminate\Support\Facades\Auth;
@@ -24,25 +25,25 @@ class SecurityPasswordController extends Controller
     }
 
 
-    public function forgotPassword(SecurityForgotPasswordDto $dto)
+    public function forgotPassword(SecurityForgotPasswordDto $dto): ApiResponse
     {
         $data = $this->securityPasswordService->forgotPassword($dto);
         return new ApiSuccessResponse($data, 200, __('security.forgot_password'));
     }
 
-    public function resetPassword(SecurityCodeDto $dto)
+    public function resetPassword(SecurityCodeDto $dto): ApiResponse
     {
         $data = $this->securityPasswordService->resetPassword($dto);
         return new ApiSuccessResponse($data, 200, __('security.reset_password'));
     }
 
-    public function recoveryPassword(SecurityPasswordRecoveryDto $dto)
+    public function recoveryPassword(SecurityPasswordRecoveryDto $dto): ApiResponse
     {
         $data = $this->securityPasswordService->recoveryPassword($dto);
         return new ApiSuccessResponse($data, 200, __('security.recovery_password'));
     }
 
-    public function changePassword(SecurityChangePasswordDto $dto)
+    public function changePassword(SecurityChangePasswordDto $dto): ApiResponse
     {
         $user = Auth::user();
         $data = $this->securityPasswordService->changePassword($dto, $user);

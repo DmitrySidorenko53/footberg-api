@@ -67,6 +67,12 @@ abstract class AbstractDto
         return $this;
     }
 
+    public function setBoolean($key, $value): static
+    {
+        $this->{$key} = (bool)$value;
+        return $this;
+    }
+
     public function setDateTime($key, $value, $format = 'Y-m-d H:i:s'): static
     {
         $datetime = Carbon::parse($value)->format($format);

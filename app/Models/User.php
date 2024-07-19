@@ -21,6 +21,7 @@ use Illuminate\Notifications\Notifiable;
  * @property Carbon $deleted_at
  * @property Carbon $last_login_at
  * @property bool $is_active
+ * @property bool $enabled_two_step_verification
  */
 class User extends Authenticatable
 {
@@ -42,7 +43,8 @@ class User extends Authenticatable
         'deleted_at',
         'last_login_at',
         'is_active',
-        'locale'
+        'locale',
+        'enabled_two_step_verification'
     ];
 
     public $timestamps = false;

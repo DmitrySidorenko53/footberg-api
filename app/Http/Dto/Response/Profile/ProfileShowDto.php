@@ -36,7 +36,9 @@ class ProfileShowDto extends AbstractDto
             ->setCollection('educations', EducationShowDto::class, $this->model->educations);
         if ($isMy) {
             $this
-                ->setCollection('roles', RoleShowDto::class, $this->model->roles);
+                ->setCollection('roles', RoleShowDto::class, $this->model->roles)
+                ->setProperty('default_locale', $this->model->locale)
+                ->setBoolean('enabled_two_step_verification', $this->model->enabled_two_step_verification);
         } else {
             $this
                 ->setDateTime('last_login_at', $this->model->last_login_at)
@@ -44,6 +46,6 @@ class ProfileShowDto extends AbstractDto
                 ->setProperty('is_active', $this->model->is_active)
                 ->setDateTime('deleted_at', $this->model->deleted_at);
         }
-        return $dto->setProperty('default_locale', $this->model->locale);
+        return $dto;
     }
 }

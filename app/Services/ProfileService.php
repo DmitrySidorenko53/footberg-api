@@ -109,5 +109,7 @@ class ProfileService implements ProfileServiceInterface
         $this->userRepository->update($user, [
             'locale' => $wantedLanguage
         ]);
+
+        app()->setLocale($wantedLanguage);
     }
 }

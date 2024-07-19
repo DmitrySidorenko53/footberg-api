@@ -27,6 +27,18 @@ Route::group(
 
                 Route::group(
                     [
+                        'prefix' => 'two-factor',
+                        'middleware' => ['token']
+                    ],
+                    function () {
+                        Route::post('/enable', [SecurityController::class, 'enableTwoFactorAuthentication']);
+                        Route::post('/disable', [SecurityController::class, 'disableTwoFactorAuthentication']);
+                    }
+                );
+
+
+                Route::group(
+                    [
                         'prefix' => 'password'
                     ],
                     function () {
