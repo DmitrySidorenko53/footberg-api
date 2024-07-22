@@ -16,6 +16,7 @@ use Illuminate\Notifications\Notifiable;
  * @property int $user_id
  * @property string $email
  * @property string $password
+ * @property string $security_phone_number
  * @property string $locale
  * @property Carbon $register_at
  * @property Carbon $deleted_at
@@ -44,7 +45,8 @@ class User extends Authenticatable
         'last_login_at',
         'is_active',
         'locale',
-        'enabled_two_step_verification'
+        'enabled_two_step_verification',
+        'security_phone_number'
     ];
 
     public $timestamps = false;
@@ -90,7 +92,7 @@ class User extends Authenticatable
         return $this->hasOne(SupportedLocale::class, 'locale');
     }
 
-    public function getLastValidCode($type = 'confirm'): object|null
+    public function getLastValidCode($type = 'email'): object|null
     {
         return $this->codes()
             ->where('is_expired', false)

@@ -5,13 +5,13 @@ namespace App\Http\Dto\Response\Security;
 use App\Http\Dto\Response\AbstractDto;
 
 /**
- * Class ConfirmationCodeDto
+ * Class PhoneNumberCodeDto
  *
  * @property int $user_id
- * @property CodeDto $email_confirmation
- * @property string $recipient
+ * @property CodeDto $phone_confirmation
+ * @property string $phone_number
  */
-class ConfirmationCodeDto extends CodeDto
+class PhoneNumberCodeDto extends CodeDto
 {
 
     public function __construct($code)
@@ -23,11 +23,11 @@ class ConfirmationCodeDto extends CodeDto
     {
         return $this
             ->setProperty('user_id', $this->model->user_id)
-            ->setDto('email_confirmation',
+            ->setDto('phone_confirmation',
                 CodeDto::class,
                 $this->model,
                 $additionalData
             )
-            ->setProperty('recipient', $this->model->user->email);
+            ->setProperty('phone_number', $this->model->user->security_phone_number);
     }
 }

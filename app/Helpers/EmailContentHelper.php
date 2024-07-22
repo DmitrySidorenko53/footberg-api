@@ -29,7 +29,7 @@ final class EmailContentHelper
         $pattern = MailPattern::query()->where('scope', $scope)->first();
 
         $additionalData = ($scope == strtolower(EmailScopeEnum::CONFIRMATION->name))
-            ? $data->confirmation : $data->reset_password;
+            ? $data->email_confirmation : $data->reset_password;
 
         return [
             'recipient' => $data->recipient,

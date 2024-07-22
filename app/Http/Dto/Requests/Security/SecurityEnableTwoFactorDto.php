@@ -10,15 +10,11 @@ class SecurityEnableTwoFactorDto extends AbstractDto implements DtoInterface
 
     public function rules(): array
     {
-        return [
-
-        ];
+        // TODO: Implement rules() method.
     }
 
     public function messages(): array
     {
-        return [
-
-        ];
+        // TODO: Implement messages() method.
     }
 }

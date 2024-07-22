@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+//todo if current user default locale redefined in locale middleware
 class LocaleMiddleware
 {
     /**

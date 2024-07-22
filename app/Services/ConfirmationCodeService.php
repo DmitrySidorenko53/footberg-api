@@ -10,6 +10,7 @@ use App\Helpers\Filters\DefaultFilter;
 use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Response\AbstractDto;
 use App\Http\Dto\Response\Security\ConfirmationCodeDto;
+use App\Http\Dto\Response\Security\PhoneNumberCodeDto;
 use App\Http\Dto\Response\Security\ResetPasswordCodeDto;
 use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
 use App\Interfaces\Service\ConfirmationCodeServiceInterface;
@@ -17,7 +18,6 @@ use App\Models\ConfirmationCode;
 use App\Models\User;
 use App\Traits\CurrentDayTrait;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -37,7 +37,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      * @throws ServiceException
      * @throws InvalidIncomeTypeException
      */
-    public function createConfirmationCode($user, $scope = 'confirm'): AbstractDto
+    public function createConfirmationCode($user, $scope = 'email'): AbstractDto
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
@@ -58,7 +58,14 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
             throw new ServiceException(__('exceptions.error_while_creating', ['model' => ConfirmationCode::class]));
         }
 
-        $dto = ($scope == 'confirm') ? ConfirmationCodeDto::class : ResetPasswordCodeDto::class;
+        $dtoTypes = [
+            'email' => ConfirmationCodeDto::class,
+            'reset' => ResetPasswordCodeDto::class,
+            'phone' => PhoneNumberCodeDto::class,
+        ];
+
+
+        $dto = $dtoTypes[$scope];
 
         return $dto::create($confirmationCode, ['code' => $code]);
     }
@@ -68,7 +75,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      * @throws ServiceException|InvalidIncomeTypeException
      * @throws TooManyRequestsException
      */
-    public function refreshCode($user, $scope = 'confirm'): AbstractDto
+    public function refreshCode($user, $scope = 'email'): AbstractDto
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);

@@ -29,6 +29,9 @@ class ProfileFillDto extends AbstractDto implements DtoInterface
 
     public function rules(): array
     {
+        $visibleRoles = $this->keys(RoleEnum::visibleRoles());
+        $educationsDegrees = $this->keys(EducationDegreeEnum::cases(), true);
+
         return [
             'surname' => 'string|between:2,100',
             'name' => 'string|between:2,100|required_with:surname',
@@ -38,7 +41,7 @@ class ProfileFillDto extends AbstractDto implements DtoInterface
             'specialization' => 'string|between:2,255|required_with:educations,educationIds',
             'position' => 'string|between:2,255|required_with:workplace|exclude_without:workplace',
             'roleIds' => 'required|array|max:2',
-            'roleIds.*' => ['required', 'integer', Rule::in($this->keys(RoleEnum::visibleRoles()))],
+            'roleIds.*' => ['required', 'integer', Rule::in($visibleRoles)],
             'educationIds' => 'array|max:6',
             'educationIds.*' => 'required_array_keys:id,startDate,endDate',
             'educationIds.*.id' => 'exists:educational_institutions,id|integer',
@@ -47,7 +50,7 @@ class ProfileFillDto extends AbstractDto implements DtoInterface
             'educations' => 'array|max:6',
             'educations.*' => 'required_array_keys:title,degree,startDate,endDate',
             'educations.*.title' => 'unique:educational_institutions,title|string|between:2,255',
-            'educations.*.degree' => ['string', Rule::in($this->keys(EducationDegreeEnum::cases(), true))],
+            'educations.*.degree' => ['string', Rule::in($educationsDegrees)],
             'educations.*.startDate' => 'date_format:Y/m/d',
             'educations.*.endDate' => 'date_format:Y/m/d|after:educations.*.startDate',
         ];
@@ -55,6 +58,9 @@ class ProfileFillDto extends AbstractDto implements DtoInterface
 
     public function messages(): array
     {
+        $educationDegreesString = $this->keys(EducationDegreeEnum::cases(), true, true);
+        $visibleRolesString = $this->keys(RoleEnum::visibleRoles(), false, true);
+
         return [
             'surname.string' => __('validation.string', ['attribute' => 'surname']),
             'surname.between' => __('validation.between', ['attribute' => 'surname', 'min' => 2, 'max' => 100]),
@@ -85,7 +91,7 @@ class ProfileFillDto extends AbstractDto implements DtoInterface
 
             'roleIds.*.required' => __('validation.required', ['attribute' => 'roleIds.id']),
             'roleIds.*.integer' => __('validation.integer', ['attribute' => 'roleIds.id']),
-            'roleIds.*.in' => __('validation.in_array', ['array' => $this->keys(RoleEnum::visibleRoles(), false, true)]),
+            'roleIds.*.in' => __('validation.in_array', ['array' => $visibleRolesString]),
             'educationIds.array' => __('validation.array', ['attribute' => 'educationIds']),
             'educationIds.max' => __('validation.array_max', ['attribute' => 'educationIds', 'max' => 6]),
 
@@ -107,7 +113,7 @@ class ProfileFillDto extends AbstractDto implements DtoInterface
             'educations.*.title.unique' => __('validation.unique', ['attribute' => 'title']),
             'educations.*.title.between' => __('validation.between', ['attribute' => 'title', 'min' => 2, 'max' => 255]),
             'educations.*.degree.string' => __('validation.string', ['attribute' => 'degree']),
-            'educations.*.degree.in' => __('validation.in_array', ['array' => $this->keys(EducationDegreeEnum::cases(), true, true)]),
+            'educations.*.degree.in' => __('validation.in_array', ['array' => $educationDegreesString]),
             'educations.*.startDate.date_format' => __('validation.date_format', ['attribute' => 'startDate', 'format' => 'year/month/day']),
             'educations.*.endDate.date_format' => __('validation.date_format', ['attribute' => 'endDate', 'format' => 'year/month/day']),
             'educations.*.endDate.after' => __('validation.after_start'),

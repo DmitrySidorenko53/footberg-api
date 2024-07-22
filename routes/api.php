@@ -31,6 +31,7 @@ Route::group(
                         'middleware' => ['token']
                     ],
                     function () {
+                        Route::post('/check-phone', [SecurityController::class, 'checkPhoneForTwoFactorAuthentication']);
                         Route::post('/enable', [SecurityController::class, 'enableTwoFactorAuthentication']);
                         Route::post('/disable', [SecurityController::class, 'disableTwoFactorAuthentication']);
                     }

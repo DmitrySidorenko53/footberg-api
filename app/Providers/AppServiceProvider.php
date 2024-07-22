@@ -9,6 +9,7 @@ use App\Interfaces\Service\RoleServiceInterface;
 use App\Interfaces\Service\SecurityPasswordServiceInterface;
 use App\Interfaces\Service\SecurityServiceInterface;
 use App\Interfaces\Service\SecurityTokenServiceInterface;
+use App\Interfaces\Service\SmsServiceInterface;
 use App\Interfaces\Service\TwoFactorServiceInterface;
 use App\Services\ConfirmationCodeService;
 use App\Services\EducationService;
@@ -17,6 +18,7 @@ use App\Services\RoleService;
 use App\Services\SecurityPasswordService;
 use App\Services\SecurityService;
 use App\Services\SecurityTokenService;
+use App\Services\SmsService;
 use App\Services\TwoFactorService;
 use Illuminate\Support\ServiceProvider;
 
@@ -47,5 +49,6 @@ class AppServiceProvider extends ServiceProvider
         RoleServiceInterface::class => RoleService::class,
         EducationServiceInterface::class => EducationService::class,
         TwoFactorServiceInterface::class => TwoFactorService::class,
+        SmsServiceInterface::class => SmsService::class,
     ];
 }

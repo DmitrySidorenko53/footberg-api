@@ -23,4 +23,5 @@ return [
     'date_format' => 'The :attribute field must have a format: :format.',
     'after_start' => 'The end date must be greater than start date.',
     'unique' => 'The :attribute must be unique.',
+    'invalid_phone_number' => 'The phone number format for selected country is invalid',
 ];
