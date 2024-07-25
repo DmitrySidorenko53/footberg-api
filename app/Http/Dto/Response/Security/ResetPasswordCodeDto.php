@@ -28,6 +28,7 @@ class ResetPasswordCodeDto extends CodeDto
                 $this->model,
                 $additionalData
             )
-            ->setProperty('recipient', $this->model->user->email);
+            ->setProperty('recipient', $this->model->user->email)
+            ->setProperty('message',  __('code.sent_reset_password_code'));
     }
 }

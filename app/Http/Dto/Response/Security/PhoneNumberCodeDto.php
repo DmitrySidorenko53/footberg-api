@@ -28,6 +28,7 @@ class PhoneNumberCodeDto extends CodeDto
                 $this->model,
                 $additionalData
             )
-            ->setProperty('phone_number', $this->model->user->security_phone_number);
+            ->setProperty('phone_number', $this->model->user->security_phone_number)
+            ->setProperty('message', __('code.sent_phone_number_confirmation_code'));
     }
 }

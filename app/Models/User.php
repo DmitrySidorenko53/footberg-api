@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ConfirmationCodeScopeEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -21,8 +22,9 @@ use Illuminate\Notifications\Notifiable;
  * @property Carbon $register_at
  * @property Carbon $deleted_at
  * @property Carbon $last_login_at
+ * @property Carbon $two_fa_enabled_at
  * @property bool $is_active
- * @property bool $enabled_two_step_verification
+ * @property bool $two_fa_enabled
  */
 class User extends Authenticatable
 {
@@ -45,7 +47,8 @@ class User extends Authenticatable
         'last_login_at',
         'is_active',
         'locale',
-        'enabled_two_step_verification',
+        'two_fa_enabled',
+        'two_fa_enabled_at',
         'security_phone_number'
     ];
 
@@ -59,6 +62,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password'
     ];
+
+    public function routeNotificationForVonage($notification): string
+    {
+        return $this->security_phone_number;
+    }
 
     public function codes(): HasMany
     {
@@ -92,11 +100,11 @@ class User extends Authenticatable
         return $this->hasOne(SupportedLocale::class, 'locale');
     }
 
-    public function getLastValidCode($type = 'email'): object|null
+    public function getLastValidCode($type = ConfirmationCodeScopeEnum::EMAIL): object|null
     {
         return $this->codes()
             ->where('is_expired', false)
-            ->where('type', $type)
+            ->where('type', $type->value)
             ->orderBy('created_at', 'desc')
             ->first();
     }

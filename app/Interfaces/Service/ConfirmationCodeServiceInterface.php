@@ -8,5 +8,5 @@ interface ConfirmationCodeServiceInterface
 {
     public function refreshCode($user, $scope): AbstractDto;
     public function createConfirmationCode($user, $scope): AbstractDto;
-    public function tryConfirmCode($code, $dto);
+    public function tryConfirmCode($code, $codeCandidate);
 }

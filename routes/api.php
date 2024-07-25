@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\ProfileController;
-use App\Http\Controllers\Api\V1\SecurityController;
-use App\Http\Controllers\Api\V1\SecurityPasswordController;
+use App\Http\Controllers\Api\V1\TwoFAController;
+use App\Http\Controllers\Api\V1\PasswordController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -14,40 +15,56 @@ Route::group(
 
         Route::group(
             [
-                'prefix' => 'security'
+                'prefix' => 'account'
             ],
             function () {
-                Route::post('/register', [SecurityController::class, 'register']);
-                Route::post('/login', [SecurityController::class, 'login']);
+                Route::post('/register', [AccountController::class, 'register']);
+                Route::post('/login', [AccountController::class, 'login']);
+                Route::post('/logout', [AccountController::class, 'logout'])->middleware('token');
+            }
+        );
 
-                Route::post('/code/confirm', [SecurityController::class, 'confirm']);
-                Route::post('/code/refresh', [SecurityController::class, 'refreshConfirmationCode']);
+        Route::group(
+            [
+                'prefix' => 'code'
+            ],
+            function () {
+                Route::post('/confirm', [AccountController::class, 'confirmAccount']);
+                Route::post('/refresh', [AccountController::class, 'refreshConfirmationCode']);
+            }
+        );
 
-                Route::post('/token/refresh', [SecurityController::class, 'refreshToken']);
+        Route::group(
+            [
+                'prefix' => 'token'
+            ],
+            function () {
+                Route::post('/token/refresh', [AccountController::class, 'refreshToken']);
+            }
+        );
 
-                Route::group(
-                    [
-                        'prefix' => 'two-factor',
-                        'middleware' => ['token']
-                    ],
-                    function () {
-                        Route::post('/check-phone', [SecurityController::class, 'checkPhoneForTwoFactorAuthentication']);
-                        Route::post('/enable', [SecurityController::class, 'enableTwoFactorAuthentication']);
-                        Route::post('/disable', [SecurityController::class, 'disableTwoFactorAuthentication']);
-                    }
-                );
+        Route::group(
+            [
+                'prefix' => 'two-factor',
+                'middleware' => ['token']
+            ],
+            function () {
+                Route::post('/login-with-sms', [TwoFAController::class, 'loginIf2FAEnabled'])->withoutMiddleware('token');
+                Route::post('/add-phone-number', [TwoFAController::class, 'addPhoneNumber']);
+                Route::post('/enable', [TwoFAController::class, 'enableTwoFactorAuthentication']);
+                Route::post('/disable', [TwoFAController::class, 'disableTwoFactorAuthentication']);
+            }
+        );
 
-
-                Route::group(
-                    [
-                        'prefix' => 'password'
-                    ],
-                    function () {
-                        Route::post('/change', [SecurityPasswordController::class, 'changePassword'])->middleware('token');
-                        Route::post('/forgot', [SecurityPasswordController::class, 'forgotPassword']);
-                        Route::post('/reset', [SecurityPasswordController::class, 'resetPassword']);
-                        Route::post('/recovery', [SecurityPasswordController::class, 'recoveryPassword']);
-                    });
+        Route::group(
+            [
+                'prefix' => 'password'
+            ],
+            function () {
+                Route::post('/change', [PasswordController::class, 'changePassword'])->middleware('token');
+                Route::post('/forgot', [PasswordController::class, 'forgotPassword']);
+                Route::post('/reset', [PasswordController::class, 'resetPassword']);
+                Route::post('/recovery', [PasswordController::class, 'recoveryPassword']);
             }
         );
 
@@ -58,10 +75,7 @@ Route::group(
             ],
             function () {
                 Route::post('/fill', [ProfileController::class, 'fill']);
-                Route::post('/logout', [ProfileController::class, 'logout']);
-
-                Route::put('/language/change/{lang}', [ProfileController::class, 'changeLanguage']);
-
+                Route::put('/locale/{lang}', [ProfileController::class, 'changeLanguage']);
                 Route::get('/show/{id?}', [ProfileController::class, 'show']);
             }
         );

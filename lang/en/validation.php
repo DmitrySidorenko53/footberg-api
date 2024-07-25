@@ -6,6 +6,7 @@ return [
     'string' => 'The :attribute field must be a string.',
     'exists' => 'The :model with specified :attribute does not exist.',
     'size' => 'The :attribute must be a size of :size.',
+    'digits' => 'The :attribute must have :digits digits.',
     'email' => 'The email field must be a valid email address.',
     'max' => 'The :attribute may not be greater than :size.',
     'min' => 'The :attribute may be greater than :size.',
@@ -24,4 +25,5 @@ return [
     'after_start' => 'The end date must be greater than start date.',
     'unique' => 'The :attribute must be unique.',
     'invalid_phone_number' => 'The phone number format for selected country is invalid',
+    'numeric' => 'The :attribute field must be a numeric.'
 ];

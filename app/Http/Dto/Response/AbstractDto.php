@@ -37,7 +37,7 @@ abstract class AbstractDto
 
     abstract protected function build($additionalData = []): self;
 
-    public function setCollection($key, $requireDto, $data): static
+    protected function setCollection($key, $requireDto, $data): static
     {
         if ($data->isEmpty()) {
             return $this;
@@ -49,7 +49,7 @@ abstract class AbstractDto
         return $this;
     }
 
-    public function setDto($key, $requireDto, $model, $additionalData = []): static
+    protected function setDto($key, $requireDto, $model, $additionalData = []): static
     {
         if (!$model) {
             return $this;
@@ -58,7 +58,7 @@ abstract class AbstractDto
         return $this;
     }
 
-    public function setProperty($key, $value): static
+    protected function setProperty($key, $value): static
     {
         if (!$value) {
             return $this;
@@ -67,13 +67,13 @@ abstract class AbstractDto
         return $this;
     }
 
-    public function setBoolean($key, $value): static
+    protected function setBoolean($key, $value): static
     {
         $this->{$key} = (bool)$value;
         return $this;
     }
 
-    public function setDateTime($key, $value, $format = 'Y-m-d H:i:s'): static
+    protected function setDateTime($key, $value, $format = 'Y-m-d H:i:s'): static
     {
         $datetime = Carbon::parse($value)->format($format);
 

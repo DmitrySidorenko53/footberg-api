@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
+use App\Enums\ConfirmationCodeScopeEnum;
 use App\Exceptions\InvalidIncomeTypeException;
 use App\Exceptions\ServiceException;
 use App\Exceptions\TooManyRequestsException;
 use App\Helpers\Filters\BetweenFilter;
 use App\Helpers\Filters\DefaultFilter;
-use App\Http\Dto\Requests\Security\SecurityCodeDto;
 use App\Http\Dto\Response\AbstractDto;
-use App\Http\Dto\Response\Security\ConfirmationCodeDto;
+use App\Http\Dto\Response\Security\EmailConfirmationCodeDto;
 use App\Http\Dto\Response\Security\PhoneNumberCodeDto;
 use App\Http\Dto\Response\Security\ResetPasswordCodeDto;
 use App\Interfaces\Repository\ConfirmationCodeRepositoryInterface;
@@ -37,7 +37,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      * @throws ServiceException
      * @throws InvalidIncomeTypeException
      */
-    public function createConfirmationCode($user, $scope = 'email'): AbstractDto
+    public function createConfirmationCode($user, $scope = ConfirmationCodeScopeEnum::EMAIL): AbstractDto
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
@@ -50,7 +50,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         $confirmationCode->created_at = now()->format('Y-m-d H:i:s');
         $confirmationCode->valid_until = now()->addMinutes(5)->format('Y-m-d H:i:s');
         $confirmationCode->user_id = $user->user_id;
-        $confirmationCode->type = $scope;
+        $confirmationCode->type = $scope->value;
 
         $isSuccess = $this->confirmationCodeRepository->save($confirmationCode);
 
@@ -59,13 +59,13 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         }
 
         $dtoTypes = [
-            'email' => ConfirmationCodeDto::class,
+            'email' => EmailConfirmationCodeDto::class,
             'reset' => ResetPasswordCodeDto::class,
             'phone' => PhoneNumberCodeDto::class,
         ];
 
 
-        $dto = $dtoTypes[$scope];
+        $dto = $dtoTypes[$scope->value];
 
         return $dto::create($confirmationCode, ['code' => $code]);
     }
@@ -75,7 +75,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      * @throws ServiceException|InvalidIncomeTypeException
      * @throws TooManyRequestsException
      */
-    public function refreshCode($user, $scope = 'email'): AbstractDto
+    public function refreshCode($user, $scope = ConfirmationCodeScopeEnum::EMAIL): AbstractDto
     {
         if ($user && (!$user instanceof User)) {
             throw new InvalidIncomeTypeException(__METHOD__, User::class);
@@ -83,7 +83,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
 
         $this->checkPossibilityOfSending($user, $scope);
 
-        $userCodesIds = $user->codes()->where('type', $scope)->pluck('code_id')->toArray();
+        $userCodesIds = $user->codes()->where('type', $scope->value)->pluck('code_id')->toArray();
 
         $this->confirmationCodeRepository->updateWhereIn('code_id', $userCodesIds, [
             'is_expired' => true
@@ -96,17 +96,13 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
      * @throws ServiceException
      * @throws InvalidIncomeTypeException
      */
-    public function tryConfirmCode($code, $dto): void
+    public function tryConfirmCode($code, $codeCandidate): void
     {
-        if (!$dto instanceof SecurityCodeDto) {
-            throw new InvalidIncomeTypeException(__METHOD__, SecurityCodeDto::class);
-        }
-
         if (!$this->isValid($code)) {
             throw new NotFoundHttpException(__('code.not_found'));
         }
 
-        if (!Hash::check($dto->code, $code->code_text)) {
+        if (!Hash::check($codeCandidate, $code->code_text)) {
             $code->is_expired = true;
             $this->confirmationCodeRepository->save($code);
             throw new InvalidArgumentException(__('code.invalid'));
@@ -170,7 +166,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
         $filters = [
             new DefaultFilter('user_id', $user->user_id),
             new BetweenFilter('created_at', $this->getDayStartAndEnd(now())),
-            new DefaultFilter('type', $scope)
+            new DefaultFilter('type', $scope->value)
         ];
 
         $countOfSentCodeForToday = $this->confirmationCodeRepository->countWithFilters($filters);
@@ -179,7 +175,7 @@ class ConfirmationCodeService implements ConfirmationCodeServiceInterface
             return;
         }
 
-        if ($countOfSentCodeForToday >= 3) {
+        if ($scope != ConfirmationCodeScopeEnum::PHONE && $countOfSentCodeForToday >= 3) {
             throw new TooManyRequestsException(__('code.too_many_attempts'));
         }
 

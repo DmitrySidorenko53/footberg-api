@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Dto\Requests\Security;
+namespace App\Http\Dto\Requests\Password;
 
 use App\Http\Dto\Requests\AbstractDto;
 use App\Interfaces\DtoInterface;
 
-class SecurityChangePasswordDto extends AbstractDto implements DtoInterface
+class ChangePasswordDto extends AbstractDto implements DtoInterface
 {
     public string $currentPassword;
     public string $newPassword;

@@ -73,7 +73,7 @@ abstract class ApiResponse extends JsonResponse
             $path = substr($path, 0, strpos($path, '?'));
         }
 
-        $path = str_replace('/', '_', $path);
+        $path = str_replace(['/', '-'], '_', $path);
         $path = substr($path, 4);
 
         $this->module = $applicationName . $path;

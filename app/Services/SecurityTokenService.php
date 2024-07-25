@@ -3,9 +3,8 @@
 namespace App\Services;
 
 use App\Exceptions\InvalidIncomeTypeException;
-use App\Exceptions\TooManyRequestsException;
 use App\Helpers\StringGenerator;
-use App\Http\Dto\Requests\Security\SecurityRefreshTokenDto;
+use App\Http\Dto\Requests\Account\RefreshTokenDto;
 use App\Http\Dto\Response\AbstractDto;
 use App\Http\Dto\Response\Security\GeneratedTokenDto;
 use App\Interfaces\DtoInterface;
@@ -58,8 +57,8 @@ class SecurityTokenService implements SecurityTokenServiceInterface
      */
     public function refresh(DtoInterface $dto): AbstractDto
     {
-        if (!$dto instanceof SecurityRefreshTokenDto) {
-            throw new InvalidIncomeTypeException(__METHOD__, SecurityRefreshTokenDto::class);
+        if (!$dto instanceof RefreshTokenDto) {
+            throw new InvalidIncomeTypeException(__METHOD__, RefreshTokenDto::class);
         }
 
         $user = $this->userRepository->findById($dto->userId);

@@ -13,15 +13,12 @@ use Illuminate\Support\Facades\Auth;
 class ProfileController extends Controller
 {
     private ProfileServiceInterface $profileService;
-    private SecurityTokenServiceInterface $securityTokenService;
 
     public function __construct(
         ProfileServiceInterface       $profileService,
-        SecurityTokenServiceInterface $securityTokenService
     )
     {
         $this->profileService = $profileService;
-        $this->securityTokenService = $securityTokenService;
     }
 
     public function fill(ProfileFillDto $dto): ApiResponse
@@ -44,12 +41,5 @@ class ProfileController extends Controller
         $user = Auth::user();
         $this->profileService->changeLanguage($user, $lang);
         return new ApiSuccessResponse([], 200, __('profile.default_language'));
-    }
-
-    public function logout(): ApiResponse
-    {
-        $user = Auth::user();
-        $this->securityTokenService->resetTokens($user);
-        return new ApiSuccessResponse([],200, __('profile.logout'));
     }
 }

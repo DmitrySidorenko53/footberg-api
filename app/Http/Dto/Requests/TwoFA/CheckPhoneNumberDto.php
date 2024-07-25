@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Dto\Requests\Security;
+namespace App\Http\Dto\Requests\TwoFA;
 
 use App\Enums\CountryPhonePrefixEnum;
 use App\Http\Dto\Requests\AbstractDto;
@@ -9,7 +9,7 @@ use App\Rules\PhoneNumberFormatRule;
 use App\Traits\EnumKeysTrait;
 use Illuminate\Validation\Rule;
 
-class SecurityCheckPhoneNumberDto extends AbstractDto implements DtoInterface
+class CheckPhoneNumberDto extends AbstractDto implements DtoInterface
 {
     use EnumKeysTrait;
 

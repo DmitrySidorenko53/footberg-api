@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Http\Responses\ApiFailResponse;
 use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -17,14 +18,20 @@ final class ExceptionHandler
 
             $data = [
                 'message' => $throwable->getMessage(),
-                'file' => $throwable->getFile(),
-                'line' => $throwable->getLine(),
-                //'trace' => $throwable->getTrace(),
             ];
 
+            if (!config('app.debug')) {
+                $data['line'] = $throwable->getLine();
+                $data['file'] = $throwable->getFile();
+                //$data['trace'] = $throwable->getTrace();
+            }
 
             if ($throwable instanceof ValidationException) {
                 return new ApiFailResponse([$throwable->errors()], 422);
+            }
+
+            if ($throwable instanceof UnauthorizedException) {
+                return new ApiFailResponse($data, 401);
             }
 
             if ($throwable instanceof InvalidArgumentException) {
